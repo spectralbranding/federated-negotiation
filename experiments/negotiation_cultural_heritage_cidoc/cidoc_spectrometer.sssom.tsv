@@ -1,0 +1,14 @@
+subject_id	predicate_id	object_id	mapping_justification	confidence	comment
+cidoc:crm-production	skos:narrowMatch	spectrometer:crm-production	semapv:ManualMappingCuration	0.5	CROSS_REFINE
+cidoc:crm-activity	skos:exactMatch	spectrometer:crm-activity	semapv:LexicalMatching	0.95	CROSS_IMPORT
+cidoc:crm-actor	skos:exactMatch	spectrometer:crm-actor	semapv:LexicalMatching	0.95	CROSS_IMPORT
+cidoc:crm-entity	skos:exactMatch	spectrometer:crm-entity	semapv:LexicalMatching	0.95	CROSS_IMPORT
+cidoc:crm-event	skos:exactMatch	spectrometer:crm-event	semapv:LexicalMatching	0.95	CROSS_IMPORT
+cidoc:crm-human-made-object	skos:exactMatch	spectrometer:crm-human-made-object	semapv:LexicalMatching	0.95	CROSS_IMPORT
+cidoc:crm-period	skos:exactMatch	spectrometer:crm-period	semapv:LexicalMatching	0.95	CROSS_IMPORT
+cidoc:crm-person	skos:exactMatch	spectrometer:crm-person	semapv:LexicalMatching	0.95	CROSS_IMPORT
+cidoc:crm-physical-thing	skos:exactMatch	spectrometer:crm-physical-thing	semapv:LexicalMatching	0.95	CROSS_IMPORT
+cidoc:crm-place	skos:exactMatch	spectrometer:crm-place	semapv:LexicalMatching	0.95	CROSS_IMPORT
+cidoc:crm-temporal-entity	skos:exactMatch	spectrometer:crm-temporal-entity	semapv:LexicalMatching	0.95	CROSS_IMPORT
+cidoc:crm-time-span	skos:exactMatch	spectrometer:crm-time-span	semapv:LexicalMatching	0.95	CROSS_IMPORT
+cidoc:crm-type	skos:exactMatch	spectrometer:crm-type	semapv:LexicalMatching	0.95	CROSS_IMPORT

@@ -1,0 +1,137 @@
+# CIDOC-CRM author module for the CULTURAL-HERITAGE federated
+# ontology-negotiation experiment (Case 5: CROSS_IMPORT at volume).
+#
+# "CIDOC-CRM, the cultural-heritage incumbent author": owns a faithful, sourced
+# slice of the CIDOC Conceptual Reference Model -- the international standard
+# ontology for cultural-heritage information. CIDOC-CRM is GENUINELY INDEPENDENT
+# of this corpus: it is a community standard maintained by the CIDOC CRM Special
+# Interest Group since the 1990s, ratified as an ISO standard, and was not
+# authored to be compatible with SBT/OST in any way. Its event-centric model of
+# people, objects, places, time-spans, and activities is precisely the
+# vocabulary a perception-provenance instrument REUSES rather than redefines --
+# the condition for high-volume clean CROSS_IMPORT.
+#
+# Definitions are FAITHFUL TRANSCRIPTIONS of the real CIDOC-CRM class scope notes
+# (first 1-2 sentences of each scope note, quoted from the official version-7.1.3
+# class declarations), each carrying its real class identifier (E-number) in the
+# `note`. They are transcribed by the SBT author from the published standard --
+# NOT authored by the CIDOC CRM SIG itself (see the record's limitations). Sources:
+#   - ISO 21127:2023, "Information and documentation -- A reference ontology for
+#     the interchange of cultural heritage information" (the ISO ratification of
+#     CIDOC-CRM, corresponding to community version 7.1.3).
+#   - CIDOC CRM version 7.1.3 (February 2024) class declarations,
+#     https://cidoc-crm.org/html/cidoc_crm_v7.1.3.html (scope notes quoted).
+#   - Doerr, Martin (2003). "The CIDOC Conceptual Reference Module: An Ontological
+#     Approach to Semantic Interoperability of Metadata." AI Magazine, 24(3),
+#     75-92. DOI: 10.1609/aimag.v24i3.1720 -- the foundational CIDOC-CRM paper.
+#
+# Deliberately NOT named ONTOLOGY.yaml and NOT a discovered ontology module, so the
+# live build_ontology.py linker never picks it up. Loaded explicitly by
+# negotiate_modules.py via --author-a. See ../README.md
+
+paper_key: cidoc_crm_real
+schema_version: 0.1
+
+owns:
+  - term_key: crm-entity
+    label: "E1 CRM Entity"
+    canonical_form: "CRM Entity"
+    definition: "This class comprises all things in the universe of discourse of the CIDOC Conceptual Reference Model."
+    first_section: "E1"
+    note: "CIDOC-CRM 7.1.3 class E1 CRM Entity (root class); scope note quoted verbatim (first sentence)."
+
+  - term_key: crm-temporal-entity
+    label: "E2 Temporal Entity"
+    canonical_form: "Temporal Entity"
+    definition: "This class comprises all phenomena, such as the instances of E4 Periods and E5 Events, which happen over a limited extent in time."
+    first_section: "E2"
+    note: "CIDOC-CRM 7.1.3 class E2 Temporal Entity; scope note quoted verbatim (first sentence)."
+
+  - term_key: crm-period
+    label: "E4 Period"
+    canonical_form: "Period"
+    definition: "This class comprises sets of coherent phenomena or cultural manifestations occurring in time and space."
+    first_section: "E4"
+    note: "CIDOC-CRM 7.1.3 class E4 Period; scope note quoted verbatim (first sentence)."
+
+  - term_key: crm-event
+    label: "E5 Event"
+    canonical_form: "Event"
+    definition: "This class comprises distinct, delimited and coherent processes and interactions of a material nature, in cultural, social or physical systems, involving and affecting instances of E77 Persistent Item in a way characteristic of the kind of process."
+    first_section: "E5"
+    note: "CIDOC-CRM 7.1.3 class E5 Event; scope note quoted verbatim (first sentence)."
+
+  - term_key: crm-activity
+    label: "E7 Activity"
+    canonical_form: "Activity"
+    definition: "This class comprises actions intentionally carried out by instances of E39 Actor that result in changes of state in the cultural, social, or physical systems documented."
+    first_section: "E7"
+    note: "CIDOC-CRM 7.1.3 class E7 Activity; scope note quoted verbatim (first sentence)."
+
+  - term_key: crm-production
+    label: "E12 Production"
+    canonical_form: "Production"
+    definition: "This class comprises activities that are designed to, and succeed in, creating one or more new items."
+    first_section: "E12"
+    note: "CIDOC-CRM 7.1.3 class E12 Production; scope note quoted verbatim (first sentence)."
+
+  - term_key: crm-physical-thing
+    label: "E18 Physical Thing"
+    canonical_form: "Physical Thing"
+    definition: "This class comprises all persistent physical items with a relatively stable form, human-made or natural."
+    first_section: "E18"
+    note: "CIDOC-CRM 7.1.3 class E18 Physical Thing; scope note quoted verbatim (first sentence)."
+
+  - term_key: crm-person
+    label: "E21 Person"
+    canonical_form: "Person"
+    definition: "This class comprises real persons who live or are assumed to have lived."
+    first_section: "E21"
+    note: "CIDOC-CRM 7.1.3 class E21 Person; scope note quoted verbatim (first sentence)."
+
+  - term_key: crm-human-made-object
+    label: "E22 Human-Made Object"
+    canonical_form: "Human-Made Object"
+    definition: "This class comprises all persistent physical objects of any size that are purposely created by human activity."
+    first_section: "E22"
+    note: "CIDOC-CRM 7.1.3 class E22 Human-Made Object; scope note quoted verbatim (first sentence)."
+
+  - term_key: crm-actor
+    label: "E39 Actor"
+    canonical_form: "Actor"
+    definition: "This class comprises real, named agents, either individual human beings or organised groups that are recognized as distinct agents by virtue of their actions or interactions."
+    first_section: "E39"
+    note: "CIDOC-CRM 7.1.3 class E39 Actor; scope note quoted verbatim (first sentence)."
+
+  - term_key: crm-time-span
+    label: "E52 Time-Span"
+    canonical_form: "Time-Span"
+    definition: "This class comprises abstract temporal extents, in the sense of Galilean physics, defined by their starting and ending points in time."
+    first_section: "E52"
+    note: "CIDOC-CRM 7.1.3 class E52 Time-Span; scope note quoted verbatim (first sentence)."
+
+  - term_key: crm-place
+    label: "E53 Place"
+    canonical_form: "Place"
+    definition: "This class comprises extents in space, in particular on the surface of the earth, in the pure sense of physics: independent bodies in a vacuum or matter in any other state of matter."
+    first_section: "E53"
+    note: "CIDOC-CRM 7.1.3 class E53 Place; scope note quoted verbatim (first sentence)."
+
+  - term_key: crm-type
+    label: "E55 Type"
+    canonical_form: "Type"
+    definition: "This class comprises concepts denoted by terms from thesauri and controlled vocabularies used to characterize and classify instances of CIDOC CRM classes."
+    first_section: "E55"
+    note: "CIDOC-CRM 7.1.3 class E55 Type; scope note quoted verbatim (first sentence)."
+
+imports: []
+refines: []
+# CIDOC-CRM predates and is independent of this corpus; it owns only its own
+# classes and imports/refines NOTHING from SBT/OST. The only cross-owner
+# interactions it participates in are being the OWNER whose classes the
+# spectrometer-provenance module imports unchanged (CROSS_IMPORT at volume) and
+# whose E12 Production class that module narrows to brand-artifact production
+# (CROSS_REFINE).
+
+glossary_changelog:
+  - {date: 2026-06-18, op: lock, note: "faithful transcription of a CIDOC-CRM 7.1.3 slice (13 classes, real E-numbers, ISO 21127:2023) for the cultural-heritage CROSS_IMPORT-at-volume experiment"}

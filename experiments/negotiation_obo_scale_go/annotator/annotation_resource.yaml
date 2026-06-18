@@ -1,0 +1,71 @@
+# Downstream annotation-resource author module for the OBO-SCALE federated
+# negotiation experiment (Case 4: DANGLING_IMPORT under OBO Principle 19).
+#
+# "The annotation resource, a downstream consumer of GO": a second authority --
+# a gene/protein annotation database or a derived analysis pipeline -- that USES
+# the Gene Ontology by reference. Its annotations cite GO terms by their GO IDs.
+# This is the realistic, high-volume way GO is consumed: thousands of databases
+# (UniProt-GOA, model-organism databases, enrichment tools) annotate with GO
+# IDs they do not themselves define.
+#
+# The annotator OWNS one small, local term (its own annotation-evidence concept)
+# and otherwise IMPORTS GO terms by reference. Two of the imported IDs were
+# RETIRED by the GO Consortium under OBO Principle 19 (changed definition / out of
+# scope => the old ID is obsoleted, NOT silently re-pointed):
+#
+#   - GO:0000005 "obsolete ribosomal chaperone activity" -- isObsolete:true,
+#     replacedBy:null, consider:null. Comment (verbatim, QuickGO API):
+#     "This term was made obsolete because it refers to a class of gene products
+#     and a biological process rather than a molecular function." There is NO
+#     active successor: a legacy annotation to this ID now dangles.
+#   - GO:0006350 "transcription" -- a legacy ID that was obsoleted and (per the
+#     post-2022 policy) `replaced_by` the narrower-defined GO:0006351
+#     "DNA-templated transcription". A legacy annotation that still imports the
+#     OLD GO:0006350 ID references a term the CURRENT GO slice does not own.
+#
+# These are NOT fabricated: they are real, sourced GO obsoletions, and they are
+# exactly the changed-definition-=>-new-ID condition the def_hash automates. The
+# importer references the OBSOLETED ids by their GO-id-derived term_keys
+# (go-0000005-ribosomal-chaperone-activity, go-0006350-transcription), which the
+# GO module does NOT own (it owns go-dna-templated-transcription = GO:0006351,
+# the successor) -> genuine DANGLING_IMPORT.
+#
+# Deliberately NOT named ONTOLOGY.yaml and NOT a discovered ontology module, Loaded
+# explicitly by negotiate_modules.py via --author-b.
+
+paper_key: go_annotator_real
+schema_version: 0.1
+
+owns:
+  # The annotator's one locally-introduced term (its own evidence concept).
+  - term_key: annotation-evidence-code
+    label: "annotation evidence code"
+    canonical_form: "evidence code"
+    definition: "A controlled-vocabulary code recording the type of evidence that supports an association between a gene product and a Gene Ontology term in a GO annotation, distinguishing experimental, phylogenetic, computational, author-statement, and curatorial-inference support."
+    first_section: "annotator.evidence"
+    note: "the downstream resource's own concept (Evidence and Conclusion Ontology / GO evidence-code tradition), introduced here so the annotator owns at least one term."
+
+imports:
+  # --- CURRENT GO terms the annotator uses by reference -> CROSS_IMPORT ---
+  # (these GO IDs are owned, active, in the GO module's current slice)
+  - {term_key: go-molecular-function}        # GO:0003674 -- aspect root, annotated against
+  - {term_key: go-biological-process}        # GO:0008150 -- aspect root, annotated against
+  - {term_key: go-cellular-component}        # GO:0005575 -- aspect root, annotated against
+  - {term_key: go-catalytic-activity}        # GO:0003824
+  - {term_key: go-binding}                   # GO:0005488
+  - {term_key: go-protein-binding}           # GO:0005515
+  - {term_key: go-signal-transduction}       # GO:0007165
+  - {term_key: go-dna-templated-transcription}  # GO:0006351 -- the CURRENT successor term
+
+  # --- RETIRED / OBSOLETED GO ids the annotator's LEGACY annotations still cite ---
+  # -> DANGLING_IMPORT (the current GO slice does NOT own these; they were
+  #    obsoleted under OBO Principle 19 / changed-definition-=>-new-ID).
+  - {term_key: go-0000005-ribosomal-chaperone-activity}  # GO:0000005 obsolete, no successor
+  - {term_key: go-0006350-transcription}                 # GO:0006350 obsolete, replaced_by GO:0006351
+
+refines: []
+# The annotator does not narrow any GO term; it consumes them by reference. The
+# only adversarial interaction is the two DANGLING_IMPORTs onto retired GO ids.
+
+glossary_changelog:
+  - {date: 2026-06-18, op: lock, note: "downstream GO-annotation resource: owns one local evidence-code term, imports 8 current GO terms (CROSS_IMPORT) + 2 retired GO ids GO:0000005/GO:0006350 (DANGLING_IMPORT under OBO Principle 19)"}

@@ -1,0 +1,538 @@
+spine_version: "0.2"
+paper_key: "federated-negotiation"
+title: "Negotiating Vocabularies at Link Time: A Deterministic Six-Class Compatibility Check for Federated Ontology Modules"
+thesis: |
+  The link-time compatibility check that compilers and package managers apply to code
+  — refuse to build when two components make incompatible demands on a shared symbol,
+  and name exactly which two disagree — transfers to scholarly vocabularies. If each
+  work declares the terms it owns, imports, and refines as a small content-addressed
+  module, a federated linker classifies every cross-author interaction into exactly one
+  of six classes (AGREEMENT, CROSS_IMPORT, CROSS_REFINE, CONFLICT, INCOMPATIBLE_REFINE,
+  DANGLING_IMPORT), proposes a typed and justified SSSOM reconciliation, and fails a
+  continuous-integration gate on the three unresolved classes — before either author
+  reads the other's prose. The classification is a deterministic pure function of two
+  parsed module sets grounded in content-addressed definition-hash identity; it occupies
+  the zero-uncertainty, syntactic/element-level corner of the ontology-matching space and
+  adds the interaction-classification + reconciliation-operation + CI-gate layer that the
+  matching literature leaves to post-hoc human judgment. The paper formalizes the
+  taxonomy, implements it as a dependency-light reference tool, and evaluates it on three
+  real, independent vocabulary pairs that together exercise the full interaction-class set.
+
+# ---------------------------------------------------------------------------
+# Boundary conditions (cannot be relaxed — the method does not apply outside them)
+# ---------------------------------------------------------------------------
+boundary_conditions:
+  - id: C1
+    statement: "Each vocabulary is expressed as a module with machine-readable intensional definitions — owned terms each carry a definition string from which a content-addressed def_hash is computed. Excludes vocabularies with no written definitions (key-only term lists) and purely procedural / free-text scholarly artifacts."
+  - id: C2
+    statement: "Identity is per-term and content-addressed: a term's identity is the sha256 of its trimmed definition. Two terms are 'the same' iff their def_hash is byte-identical. The method classifies INTERACTIONS, not semantic similarity across differing keys (cross-key synonymy is out of scope; it requires an embedding-assist or human-curation layer)."
+  - id: C3
+    statement: "There exist owners: every term is owned by exactly one module (the introducing work); imports/refines reference owned terms. A 'federation' is two namespaced module sets from two distinct authorities (cross-temporal-self counts as the degenerate single-author case)."
+  - id: C4
+    statement: "The reconciliation semantics (lock/fork/rebase/merge) and the fail-the-build CI gate presuppose an ecosystem that runs a continuous-integration gate over its vocabulary. Domains where fork/rebase semantics damage cumulative reference (e.g. legal or regulatory ontologies whose identifiers must never re-point) are out of scope for the gate, though the classification still applies."
+
+# ---------------------------------------------------------------------------
+# Observations — raw deterministic run outputs (immutable L-layer events)
+# ---------------------------------------------------------------------------
+observations:
+  - id: O1
+    statement: "SBT<->OST run (negotiate_modules.py on the two intra-author convergent module sets): NEGOTIATION REPORT sbt <-> ost — 4 CROSS_IMPORT + 2 CROSS_REFINE, 0 unresolved; 'Federation clean'."
+    raw_data_pointer: "experiments/{sbt,ost}/ ; record NEGOTIATION_REAL_CORPORA_SBT_OST_2026-06-13.md"
+    instrument: "negotiate_modules.py (shared build_ontology.Module parser + def_hash)"
+    timestamp: "2026-06-13"
+    conditions_at_capture: "Python 3.12 + uv; deterministic, no network, no seed; live substrate/ontology neither read nor written"
+    provenance:
+      created_by: "tool:negotiate_modules.py"
+      created_at: "2026-06-13"
+    body_sections: ["Evaluation — Case 1 (Clean Intra-Author Federation)"]
+  - id: O2
+    statement: "SBT<->Aaker run: NEGOTIATION REPORT sbt <-> aaker — 2 DANGLING_IMPORT (brand, consumer), 0 CONFLICT, 0 other; 'Federation NOT clean'; --gate exit 1; tool-emitted SSSOM is header-only (DANGLING carries no mapping)."
+    raw_data_pointer: "experiments/ ; record NEGOTIATION_INDEPENDENT_AAKER_SBT_2026-06-14.md"
+    instrument: "negotiate_modules.py"
+    timestamp: "2026-06-14"
+    conditions_at_capture: "author A = SBT perceptual module (7 owned terms, def_hash matches live graph per integrity manifest); author B = faithfully transcribed Aaker incumbent module (9 owned terms, attributed per term)"
+    provenance:
+      created_by: "tool:negotiate_modules.py"
+      created_at: "2026-06-14"
+    body_sections: ["Evaluation — Case 2 (Independent Incumbent, Dangling Import)"]
+  - id: O3
+    statement: "SBT<->Spence run: NEGOTIATION REPORT sbt <-> spence — 1 CONFLICT on the bare shared key `signal` (same label, divergent def_hash; skos:closeMatch @ .5, semapv:ManualMappingCuration) + 1 DANGLING_IMPORT (labor-market); 'Federation NOT clean'; --gate exit 1."
+    raw_data_pointer: "experiments/ ; record NEGOTIATION_INDEPENDENT_SPENCE_SBT_2026-06-14.md"
+    instrument: "negotiate_modules.py"
+    timestamp: "2026-06-14"
+    conditions_at_capture: "author A = SBT signal module; author B = Spence (1973) economic-signaling module; both legitimately own bare key `signal` with content-divergent definitions"
+    provenance:
+      created_by: "tool:negotiate_modules.py"
+      created_at: "2026-06-14"
+    body_sections: ["Evaluation — Case 3 (Cross-Disciplinary Homonym, Conflict)"]
+  - id: O4
+    statement: "Engineered fixture run (authorA<->authorB): exercises AGREEMENT (cohort, identical def_hash 89a748fe3919af1b), CONFLICT (brand-signal), CROSS_REFINE (perception-cloud, narrows_to), DANGLING_IMPORT (brand-equity) in one report — the partition coverage harness."
+    raw_data_pointer: "experiments/{authorA,authorB}/"
+    instrument: "negotiate_modules.py"
+    timestamp: "2026-06-13"
+    conditions_at_capture: "synthetic two-author fixture engineered to hit the four interesting classes including AGREEMENT (which the three real pairs do not produce)"
+    provenance:
+      created_by: "tool:negotiate_modules.py"
+      created_at: "2026-06-13"
+    body_sections: ["Method — The Six Interaction Classes", "Evaluation — Class Coverage"]
+  - id: O5
+    statement: "GO<->annotator run (OBO-scale): NEGOTIATION REPORT go <-> annotator — 8 CROSS_IMPORT (current GO terms) + 2 DANGLING_IMPORT (retired GO ids GO:0000005, GO:0006350) ; 'Federation NOT clean'; --gate exit 1; tool-emitted SSSOM carries the 8 CROSS_IMPORT rows, no row for the 2 DANGLING. The dangling is grounded in GO's OBO Principle-19 term-obsoletion governance (changed-definition => new ID), the byte-exact policy def_hash automates."
+    raw_data_pointer: "experiments/ ; record NEGOTIATION_OBO_SCALE_GO_2026-06-18.md"
+    instrument: "negotiate_modules.py"
+    timestamp: "2026-06-18"
+    conditions_at_capture: "author A = faithfully transcribed Gene Ontology slice (12 current terms, real GO IDs via EBI QuickGO); author B = downstream annotation resource importing 8 current GO terms + 2 obsoleted GO ids"
+    provenance:
+      created_by: "tool:negotiate_modules.py"
+      created_at: "2026-06-18"
+    body_sections: ["Evaluation — Case 4 (OBO-Scale Dangling Import)"]
+  - id: O6
+    statement: "CIDOC-CRM<->spectrometer run (cultural-heritage, CROSS_IMPORT at volume): NEGOTIATION REPORT cidoc <-> spectrometer — 12 CROSS_IMPORT (CIDOC classes reused unchanged) + 1 CROSS_REFINE (E12 Production narrowed to brand-artifact production, narrows_to) ; 0 unresolved; 'Federation clean'; --gate exit 0. Twelve cross-imports is 3x Case 1's four — the resolved classes scale to genuine cross-domain reuse."
+    raw_data_pointer: "experiments/ ; record NEGOTIATION_CULTURAL_HERITAGE_CIDOC_2026-06-18.md"
+    instrument: "negotiate_modules.py"
+    timestamp: "2026-06-18"
+    conditions_at_capture: "author A = faithfully transcribed CIDOC-CRM 7.1.3 slice (13 classes, verbatim scope notes, ISO 21127:2023); author B = Brand-Spectrometer provenance instrument reusing 12 CIDOC classes + owning 2 local bridge terms + refining E12"
+    provenance:
+      created_by: "tool:negotiate_modules.py"
+      created_at: "2026-06-18"
+    body_sections: ["Evaluation — Case 5 (Cultural-Heritage Cross-Import at Volume)"]
+
+# ---------------------------------------------------------------------------
+# Methods
+# ---------------------------------------------------------------------------
+methods:
+  - id: M1
+    statement: "The classification function classify(M_A, M_B): parse both authors' modules with the SAME parser the single-author linker uses (build_ontology.Module + def_hash + _norm_ref); index each author into owns{term_key->def_hash} / imports{} / refines{term_key->narrows_to}; assign every cross-owner interaction to exactly one of six classes by a fixed decision rule over (shared-key equality of def_hash, refine-with/without-narrows_to, import-owned-by-other/neither)."
+    type: "formal_derivation"
+    inputs: [O1, O2, O3, O4]
+    outputs: [F1, F2, F3, F4]
+    code_anchor: "code/negotiate_modules.py (negotiate / index_author); code/build_ontology.py (Module, def_hash)"
+    reproducibility:
+      seed: "deterministic — no RNG; def_hash = sha256(trimmed definition); classify is a pure function of two parsed module sets"
+      version: "v1.0.0"
+      runtime_environment: "Python 3.12 + uv; no network, no credentials"
+    cost: "$0 (no API calls)"
+    provenance:
+      created_by: "author"
+      created_at: "2026-06-13"
+    body_sections: ["Method — Formal Core", "Method — The Six Interaction Classes"]
+  - id: M2
+    statement: "The reconciliation + gate map: each class is assigned (a) a SKOS mapping predicate, (b) a reconciliation operation in {lock, fork, rebase, merge} lifted from the single-author lock/fork/rebase/merge vocabulary, (c) an SSSOM justification (semapv:LexicalMatching for mechanical hash/lexical matches, semapv:ManualMappingCuration for proposals a human must confirm) + confidence, and (d) gate semantics: the three unresolved classes (CONFLICT, INCOMPATIBLE_REFINE, DANGLING_IMPORT) fail --gate."
+    type: "formal_derivation"
+    inputs: [O1, O2, O3, O4]
+    outputs: [F5]
+    code_anchor: "code/negotiate_modules.py (PREDICATE, OPERATION, UNRESOLVED, render_sssom)"
+    reproducibility:
+      seed: "deterministic"
+      version: "v1.0.0"
+    provenance:
+      created_by: "author"
+      created_at: "2026-06-13"
+    body_sections: ["Method — Reconciliation and Gate Semantics"]
+  - id: M3
+    statement: "Integrity manifest: each shared SBT term's def_hash (sha256 truncated to 16 hex) is recomputed at run time and checked equal to the live ontology graph value — the deterministic-experiment analogue of a fixed random seed (tamper-evidence anchor)."
+    type: "verification_cascade"
+    inputs: [O2, O3]
+    code_anchor: "code/build_ontology.py (def_hash); per-experiment integrity-manifest tables"
+    reproducibility:
+      seed: "deterministic; hashes reproduce byte-identically"
+      version: "v1.0.0"
+    provenance:
+      created_by: "tool:build_ontology.py"
+      created_at: "2026-06-14"
+    body_sections: ["Method — Reproducibility (Integrity Manifest)"]
+
+# ---------------------------------------------------------------------------
+# Findings — what is the case
+# ---------------------------------------------------------------------------
+findings:
+  - id: F1
+    statement: "On all six module pairs the linker assigned every cross-owner interaction to exactly one of the six classes and terminated with a clean/NOT-clean verdict; no interaction was left unclassified and the tool did not error on real modules (mechanizability). Coverage spans five real, independent vocabulary pairs (SBT/OST, SBT/Aaker, SBT/Spence, GO/annotator, CIDOC-CRM/spectrometer) plus the engineered AGREEMENT fixture."
+    source_method: M1
+    antecedents: [O1, O2, O3, O4, O5, O6, M1]
+    statistical_strength: "deterministic; existence-proof / case-study, not statistical (6 pairs: 5 real + 1 fixture)"
+    conditions: "C1, C2, C3"
+    falsifier: "Any cross-owner interaction left unclassified, or the tool erroring on a well-formed module pair, refutes F1."
+    citation_role: ["motivation_for_P1"]
+    provenance:
+      created_by: "tool:negotiate_modules.py"
+      created_at: "2026-06-14"
+    body_sections: ["Evaluation — Results"]
+  - id: F2
+    statement: "The clean case (SBT<->OST) produced 4 CROSS_IMPORT + 2 CROSS_REFINE and 0 unresolved interactions: --gate passes (exit 0). A clean intra-author federation still requires explicit CROSS_REFINE narrowMatch reconciliation to remain machine-actionable."
+    source_method: M1
+    antecedents: [O1, M1]
+    statistical_strength: "single deterministic run; byte-reproducible"
+    conditions: "C1, C2, C3, C4"
+    falsifier: "An unresolved interaction in the by-construction-clean intra-author pair would refute F2 (and the 'one author = rebase against past self' account)."
+    provenance:
+      created_by: "tool:negotiate_modules.py"
+      created_at: "2026-06-13"
+    body_sections: ["Evaluation — Case 1"]
+  - id: F3
+    statement: "The independent-incumbent case (SBT<->Aaker) produced the first genuine --gate-failing adversarial class on real corpora — 2 DANGLING_IMPORT (brand, consumer: base primitives the incumbent presupposes but neither ontology owns) — and 0 same-key CONFLICT, because SBT's deliberately-qualified naming (perception-cloud not 'brand image'; brand-conviction not 'brand attitude') forecloses bare-key collisions. The genuine SBT<->incumbent correspondences are cross-key and invisible to the key-based linker (captured only by a hand-authored curated SSSOM)."
+    source_method: M1
+    antecedents: [O2, M1, M3]
+    statistical_strength: "single deterministic run + integrity-manifest tamper check"
+    conditions: "C1, C2, C3"
+    falsifier: "A clean federation (no adversarial class) OR a same-key CONFLICT in this pair would refute F3 and the qualified-naming account respectively."
+    citation_role: ["motivation_for_P2"]
+    provenance:
+      created_by: "tool:negotiate_modules.py"
+      created_at: "2026-06-14"
+    body_sections: ["Evaluation — Case 2"]
+  - id: F4
+    statement: "The cross-disciplinary case (SBT<->Spence) produced a genuine same-key CONFLICT on the bare term `signal` (identical key, content-divergent def_hash) classified 'same label, divergent definition' with a skos:closeMatch @ confidence .5 flagged semapv:ManualMappingCuration, plus 1 DANGLING_IMPORT (labor-market): --gate exit 1. Cross-disciplinary homonymy is the condition SBT's qualified naming cannot foreclose, so the CONFLICT class arises honestly."
+    source_method: M1
+    antecedents: [O3, M1, M3]
+    statistical_strength: "single deterministic run + integrity-manifest tamper check"
+    conditions: "C1, C2, C3"
+    falsifier: "If the two `signal` definitions hashed equal (an AGREEMENT) or the overlap were not classified as same-label CONFLICT, F4 is refuted."
+    citation_role: ["motivation_for_P2"]
+    provenance:
+      created_by: "tool:negotiate_modules.py"
+      created_at: "2026-06-14"
+    body_sections: ["Evaluation — Case 3"]
+  - id: F5
+    statement: "Across the six pairs the six classes partition the observed interactions and the gate is sound on the three unresolved classes: every emitted finding carried exactly one class, predicate, and operation; --gate exited nonzero on exactly the pairs containing CONFLICT/INCOMPATIBLE_REFINE/DANGLING_IMPORT (Aaker, Spence, GO/annotator, fixture) and zero on the clean pairs (SBT/OST, CIDOC-CRM/spectrometer). Cases 4 and 5 extend the existing classes to larger cross-domain standards — DANGLING_IMPORT at OBO scale grounded in GO's term-obsoletion governance (8 CROSS_IMPORT + 2 DANGLING) and CROSS_IMPORT at 3x Case-1 volume on CIDOC-CRM (12 CROSS_IMPORT + 1 CROSS_REFINE) — not a new class. The engineered fixture additionally realizes AGREEMENT (identical def_hash); INCOMPATIBLE_REFINE has no real-case instance because the module schema requires a narrows_to on every refine — it is a guard the well-formed-module discipline forecloses."
+    source_method: M2
+    antecedents: [O1, O2, O3, O4, O5, O6, M2]
+    statistical_strength: "deterministic partition over 6 pairs; coverage = 5/6 classes on real data, 6/6 including the engineered AGREEMENT fixture"
+    conditions: "C1, C2, C3, C4"
+    falsifier: "An interaction assignable to two classes, or a >X% rate of unclassifiable 'seventh-class' interactions on real pairs in the wild, would refute the partition (P1's general-claim falsifier)."
+    provenance:
+      created_by: "tool:negotiate_modules.py"
+      created_at: "2026-06-14"
+    body_sections: ["Method — Partition and Gate Soundness", "Evaluation — Class Coverage"]
+
+# ---------------------------------------------------------------------------
+# Propositions — why is it the case (the theoretical claims)
+# ---------------------------------------------------------------------------
+propositions:
+  - id: P1
+    statement: "Cross-author terminological incompatibility in scholarship can be surfaced, classified, and assigned a reconciliation operation mechanically — at link time, before either author reads the other's prose — by a total classification function over two content-addressed module sets whose six classes partition every cross-owner interaction."
+    type: ontological
+    conditions: "C1, C2, C3"
+    antecedents: [F1, F5]
+    assumptions: [AA1, AA2]
+    falsifier: "If more than a small fraction of real, well-formed scholarly vocabulary pairs in the wild contain a cross-owner interaction that the six classes cannot uniquely classify (an unclassifiable seventh class), the taxonomy is falsified."
+    evidence:
+      - type: code_anchor
+        anchor: "negotiate_modules.py classify() — a pure function of two parsed module sets; def_hash content-addressing"
+      - type: log_anchor
+        anchor: "F1 (every interaction classified, no errors) + F5 (partition + gate soundness across 4 pairs)"
+      - type: citation
+        anchor: "the matching problem and its element-level/syntactic corner; this method occupies the zero-uncertainty vertex"
+        citation_keys: [euzenat-shvaiko-2013-ontology-matching, rahm-bernstein-2001-schema-matching-survey]
+        citation_role: theoretical_predecessor
+    body_sections: ["Introduction", "Method — Formal Core", "Discussion"]
+    provenance:
+      created_by: "author"
+      created_at: "2026-06-18"
+  - id: P2
+    statement: "The deterministic key+content-hash linker occupies a deliberately degenerate (zero-uncertainty) point of the ontology-matching space — syntactic, element-level, verification rather than discovery — and contributes the layer the matching literature leaves to post-hoc human judgment: interaction-classification + typed SKOS/SSSOM reconciliation + a fail-the-build CI gate. It does not compete with OAEI-style similarity/learned matchers; it is the zero-uncertainty baseline against which learned reconciliation methods are measured."
+    type: ontological
+    conditions: "C1, C2"
+    antecedents: [F3, F4, F5]
+    falsifier: "If the classification or gate required a similarity threshold / probabilistic score to decide a class (i.e. were not a deterministic function of def_hash equality and declared import/refine edges), P2's zero-uncertainty positioning fails."
+    evidence:
+      - type: log_anchor
+        anchor: "F3 (Aaker DANGLING + cross-key invisibility), F4 (Spence same-key CONFLICT via def_hash divergence) — both decided with no similarity scoring"
+      - type: citation
+        anchor: "matching families (string/structural/instance/logic/learned) + SSSOM as the interchange format + OAEI as the evaluation campaign the method does not compete in"
+        citation_keys: [euzenat-shvaiko-2013-ontology-matching, shvaiko-euzenat-2021-oaei-results, matentzoglu-2022-sssom, miles-bechhofer-2009-skos-reference]
+        citation_role: theoretical_predecessor
+      - type: citation
+        anchor: "the learned/background-knowledge branch this method deliberately defers and is the baseline for"
+        citation_keys: [portisch-2023-background-knowledge-matching]
+        citation_role: contrast_case
+    ruled_out_rivals: [A1]
+    body_sections: ["Related Work — Positioning", "Related Work — Learned vs Deterministic", "Discussion"]
+    provenance:
+      created_by: "author"
+      created_at: "2026-06-18"
+  - id: P3
+    statement: "Content-addressed definition-hash identity gives the 'changed definition ⇒ new identity' rule mechanically and automatically: a term's identity is the byte-hash of its definition, so a substantive definitional change yields a new identity with no human identifier-minting. This is the automatic, byte-exact strengthening of the OBO Foundry policy that a changed definition warrants a new identifier."
+    type: ontological
+    conditions: "C2"
+    antecedents: [F4, M3]
+    falsifier: "If two definitions that a human judges substantively different hash equal (a meaning-preserving paraphrase aside), or the identity rule required manual minting, P3 fails."
+    evidence:
+      - type: log_anchor
+        anchor: "F4: the two `signal` definitions hash differently → distinct identities → CONFLICT, with no human ID assignment; M3 integrity manifest reproduces the hashes"
+      - type: citation
+        anchor: "OBO Foundry Principle 19 'Stability of Term Meaning' — a definitional change warrants a new IRI; content-addressing makes this automatic"
+        citation_keys: [smith-2007-obo-foundry, jackson-2021-obo-foundry-in-2021]
+        citation_role: theoretical_predecessor
+      - type: citation
+        anchor: "content-addressed / Merkle identity; verifiable immutable linked-data artifacts"
+        citation_keys: [merkle-1988-digital-signature, kuhn-2014-trusty-uris]
+        citation_role: canonical_reference
+    body_sections: ["Method — Content-Addressed Identity", "Related Work — Identity and Versioning"]
+    provenance:
+      created_by: "author"
+      created_at: "2026-06-18"
+  - id: P4
+    statement: "Recent conflict-resolution work (continuous/collaborative ontology engineering; learned/LLM knowledge-graph conflict resolution; RAG inter-context-conflict benchmarks) DETECTS or LEARNS conflicts post-hoc; the link-time linker PREVENTS their propagation deterministically at install time. The delta is preventive-vs-detective and deterministic-vs-learned, not a better matcher."
+    type: ontological
+    conditions: "C1, C3, C4"
+    antecedents: [F5]
+    falsifier: "If a cited nearest-neighbor already performs deterministic link-time interaction-classification with typed reconciliation on author-declared modules, the novelty delta collapses."
+    evidence:
+      - type: citation
+        anchor: "nearest neighbors that detect/learn conflicts post-hoc — the precise delta is deterministic prevention at link time"
+        citation_keys: [salamon-2026-continuous-ontology-engineering, lee-2025-magic-rag-conflict-benchmark, portisch-2023-background-knowledge-matching]
+        citation_role: contrast_case
+    body_sections: ["Related Work — Learned vs Deterministic"]
+    provenance:
+      created_by: "author"
+      created_at: "2026-06-18"
+  - id: P5
+    statement: "The method is a strict generalization of the single-author ontology linker: the single-author case is the degenerate federation where the two authors are one person at two times and the 'negotiation' collapses to a rebase against one's own past self. The same parser reads modules in both regimes, so the single-author linker and the federated linker can never disagree on how a module is read or a definition hashed."
+    type: rendering_equivalence
+    conditions: "C2, C3"
+    antecedents: [F1, F2]
+    falsifier: "If the federated linker parsed a module differently from the single-author linker (different def_hash or owns/imports/refines reading), P5 fails."
+    evidence:
+      - type: code_anchor
+        anchor: "negotiate_modules.py imports build_ontology.Module + def_hash + _norm_ref — one parser, two regimes"
+      - type: log_anchor
+        anchor: "F2 clean SBT/OST intra-author federation = rebase-against-past-self regime"
+      - type: citation
+        anchor: "the parent infrastructure paper: research-as-repository, 'negotiate a paper before you read it'"
+        citation_keys: [zharnikov-2026-research-as-repository-git-native]
+        citation_role: theoretical_predecessor
+    body_sections: ["Method — Relation to the Single-Author Linker", "Introduction"]
+    provenance:
+      created_by: "author"
+      created_at: "2026-06-18"
+
+# ---------------------------------------------------------------------------
+# Derivations — reasoning bridges
+# ---------------------------------------------------------------------------
+derivations:
+  - id: D1
+    statement: "Partition + gate soundness: because each interaction is decided by mutually-exclusive, exhaustive conditions over (shared-key def_hash equality; refine with/without narrows_to; import owned-by-other/neither), classify is a total function onto six disjoint classes; the gate is sound w.r.t. the three classes whose reconciliation is not yet authored (CONFLICT/INCOMPATIBLE_REFINE/DANGLING_IMPORT), so a passing gate certifies a linkable federation."
+    from: [P1]
+    to: "gate-soundness proposition"
+    reasoning_type: "formal_proof"
+    formal_proof_anchor: "code/negotiate_modules.py (negotiate); proof sketch in Method — Partition and Gate Soundness"
+    provenance:
+      created_by: "author"
+      created_at: "2026-06-18"
+    body_sections: ["Method — Partition and Gate Soundness"]
+
+# ---------------------------------------------------------------------------
+# Alternative explanations (rivals)
+# ---------------------------------------------------------------------------
+alternative_explanations:
+  - id: A1
+    statement: "The contribution is 'yet another ontology matcher' that should be benchmarked on OAEI tracks and compared to similarity/learned systems on precision/recall."
+    rules_out_required: [F5]
+    ruled_out_by: [F5]
+    rules_out_status: "rejected"
+    reasoning: "The method asserts no similarity scores and discovers no candidate matches: it classifies declared interactions and verifies def_hash identity. It occupies the zero-uncertainty vertex of the matching space (P2) and adds classification+reconciliation+gate, a layer orthogonal to OAEI precision/recall. Benchmarking it as a matcher is a category error."
+    provenance:
+      created_by: "author"
+      created_at: "2026-06-18"
+    body_sections: ["Related Work — Positioning", "Discussion"]
+
+# ---------------------------------------------------------------------------
+# Robustness checks
+# ---------------------------------------------------------------------------
+robustness_checks:
+  - id: RC1
+    statement: "Determinism / byte-identical reruns: re-running each command on the same inputs and tool reproduces byte-identical reports and SSSOM, and the integrity manifest's def_hash values reproduce and equal the live-graph values."
+    varied_parameter: "rerun (none) — reproducibility check"
+    range_explored: "all four pairs re-run"
+    result_stability: "confirmed (byte-identical; def_hash tamper-check passes)"
+    affects_nodes: [F1, F2, F3, F4, F5]
+    source_method: M3
+    provenance:
+      created_by: "tool:negotiate_modules.py"
+      created_at: "2026-06-18"
+    body_sections: ["Method — Reproducibility", "Threats to Validity"]
+
+# ---------------------------------------------------------------------------
+# Limitations
+# ---------------------------------------------------------------------------
+limitations:
+  - id: L1
+    statement: "All three real module sets are AUTHOR-TRANSCRIBED: the SBT author transcribed the incumbent Aaker and cross-disciplinary Spence vocabularies from published sources, and each conflict is resolved only as a tool-PROPOSED curation. The independence is in each vocabulary's provenance, not yet in a living co-author's authoring act."
+    affects: [F3, F4, P1]
+    severity: "high"
+    mitigation: "State explicitly; quantify the transcription effort; name an automated-extraction path (definition extraction from published text) as future work; scope the claim to 'the mechanism + coverage of the class set on real vocabularies', NOT validated multi-author social adoption."
+    provenance:
+      created_by: "author"
+      created_at: "2026-06-18"
+    body_sections: ["Threats to Validity", "Limitations and Future Work"]
+  - id: L2
+    statement: "The key-based linker surfaces same-key collisions and explicit import/refine edges; it does NOT detect latent cross-key synonymy (e.g. perception-cloud vs brand-image). The genuine SBT<->incumbent correspondences had to be hand-authored as a curated SSSOM. Cross-key reconciliation requires an embedding-assist or human-curation layer, deliberately out of scope."
+    affects: [F3, P2]
+    severity: "medium"
+    mitigation: "Name as a scope boundary (C2) not a defect; the curated cross-key SSSOM is the artifact the manual-curation layer accounts for; learned cross-key matching is future work."
+    provenance:
+      created_by: "author"
+      created_at: "2026-06-18"
+    body_sections: ["Scope and Boundary Conditions", "Threats to Validity"]
+  - id: L3
+    statement: "Five hand-curated cases are an existence proof of full class coverage on real vocabularies, not a full-ontology robustness benchmark; the two added pairs (GO DANGLING at OBO scale, CIDOC-CRM CROSS_IMPORT at volume) transcribe representative 12-13-term slices, not whole ontologies. Full-ontology scale (thousands of terms) and transcription bias remain real external-validity threats the lead reviewer will raise."
+    affects: [F5, P1]
+    severity: "medium"
+    mitigation: "Frame as existence-proof/case-study (not statistical); the two committed scale/volume pairs are DELIVERED (Cases 4-5, O5/O6); a full-ontology run + automated definition extraction remain future work; report runtime is linear in term count (set intersection)."
+    provenance:
+      created_by: "author"
+      created_at: "2026-06-18"
+    body_sections: ["Threats to Validity", "Limitations and Future Work"]
+
+# ---------------------------------------------------------------------------
+# Negative findings
+# ---------------------------------------------------------------------------
+negative_findings:
+  - id: NF1
+    statement: "No same-key CONFLICT arose against the independent INCUMBENT brand vocabulary (Aaker) — an informative absence: it is evidence that SBT's qualified naming converts would-be same-key conflicts into curated cross-key mappings, not a failed experiment. The CONFLICT class required a DIFFERENT-DISCIPLINE homonym (Spence `signal`) to arise."
+    expected_observation: "A same-key CONFLICT if naive shared naming were used."
+    source_method: M1
+    affects_nodes: [F3, P2]
+    motivates: [F4]
+    provenance:
+      created_by: "author"
+      created_at: "2026-06-18"
+    body_sections: ["Evaluation — Case 2", "Discussion"]
+  - id: NF2
+    statement: "To our knowledge no prior work frames ontology/vocabulary alignment as a compile/link-time check, nor transfers a software link-time compatibility check to terminology integration. Stated defensively (Gemini grounding found none), never as proven non-existence."
+    expected_observation: "A prior compile/link-time vocabulary-compatibility check, if one existed."
+    source_method: "Phase-1 + Phase-2 DR literature search (Gemini grounding + Crossref verification)"
+    affects_nodes: [P1, P2]
+    motivates: [P1]
+    provenance:
+      created_by: "ai:gemini-2.5-pro+seed:N/A+prompt_anchor:[internal audit artifact]"
+      created_at: "2026-06-18"
+    body_sections: ["Related Work — Positioning"]
+
+# ---------------------------------------------------------------------------
+# Assumption atoms
+# ---------------------------------------------------------------------------
+assumption_atoms:
+  - id: AA1
+    statement: "A term's trimmed definition string validly carries its intensional meaning for identity purposes, so sha256(definition) is a sound identity test for 'same definition'."
+    type: "measurement_validity"
+    relaxable: true
+    relaxation_consequence: "If meaning-preserving paraphrases must count as the same identity, def_hash over-discriminates and a normalization/embedding layer is needed; the partition and gate are unaffected, only the AGREEMENT/CONFLICT boundary shifts."
+    affects: [M1, P1, P3]
+    provenance:
+      created_by: "author"
+      created_at: "2026-06-18"
+    body_sections: ["Method — Content-Addressed Identity", "Threats to Validity"]
+  - id: AA2
+    statement: "Each author honestly declares owns/imports/refines (with narrows_to on refines): the module discipline (one owner per term; refine carries an explicit narrowing) is followed."
+    type: "data_source_trust"
+    relaxable: true
+    relaxation_consequence: "A refine without narrows_to is exactly the INCOMPATIBLE_REFINE guard class; a missing owner is DANGLING_IMPORT. Violations surface AS unresolved classes rather than corrupting the classification."
+    affects: [M1, F5]
+    provenance:
+      created_by: "author"
+      created_at: "2026-06-18"
+    body_sections: ["Method — Module Schema"]
+
+# ---------------------------------------------------------------------------
+# Cross-paper engagement (non-overlap contract with 2026u)
+# ---------------------------------------------------------------------------
+corpus_precedents:
+  - paper_key: 2026u
+    relationship: extends
+    spine_nodes: [P5, F2]
+    note: "Parent (R14 'Research as Repository'). 2026u keeps the condensed §5.5/§5.6 result + a forward reference; THIS paper owns the taxonomy, the tool, and the three-case evaluation in depth and does NOT re-argue the repository reconception (non-overlap contract, [internal doc] §0)."
+  - paper_key: 2026ap
+    relationship: applies
+    spine_nodes: [P5]
+    note: "Same-meaning-different-prose / spine-rendering equivalence — the spine/module substrate this tool operates on (light corpus-precedent cite)."
+
+# ---------------------------------------------------------------------------
+# External anchors
+# ---------------------------------------------------------------------------
+external_anchors:
+  - citation_key: euzenat-shvaiko-2013-ontology-matching
+    role: theoretical_predecessor
+    spine_nodes: [P1, P2]
+  - citation_key: shvaiko-euzenat-2021-oaei-results
+    role: contrast_case
+    spine_nodes: [P2]
+  - citation_key: rahm-bernstein-2001-schema-matching-survey
+    role: theoretical_predecessor
+    spine_nodes: [P1]
+  - citation_key: matentzoglu-2022-sssom
+    role: methodological_source
+    spine_nodes: [P2]
+  - citation_key: miles-bechhofer-2009-skos-reference
+    role: methodological_source
+    spine_nodes: [P2]
+  - citation_key: smith-2007-obo-foundry
+    role: theoretical_predecessor
+    spine_nodes: [P3]
+  - citation_key: jackson-2021-obo-foundry-in-2021
+    role: theoretical_predecessor
+    spine_nodes: [P3]
+  - citation_key: merkle-1988-digital-signature
+    role: canonical_reference
+    spine_nodes: [P3]
+  - citation_key: kuhn-2014-trusty-uris
+    role: canonical_reference
+    spine_nodes: [P3]
+  - citation_key: levine-1999-linkers-and-loaders
+    role: canonical_reference
+    spine_nodes: [P1]
+  - citation_key: preston-werner-2013-semantic-versioning
+    role: canonical_reference
+    spine_nodes: [P1]
+  - citation_key: pierce-2002-types-and-programming-languages
+    role: methodological_source
+    spine_nodes: [D1]
+  - citation_key: portisch-2023-background-knowledge-matching
+    role: contrast_case
+    spine_nodes: [P2, P4]
+  - citation_key: salamon-2026-continuous-ontology-engineering
+    role: contrast_case
+    spine_nodes: [P4]
+  - citation_key: lee-2025-magic-rag-conflict-benchmark
+    role: contrast_case
+    spine_nodes: [P4]
+  - citation_key: wilkinson-2016-fair-guiding-principles
+    role: motivating_problem
+    spine_nodes: [P1]
+  - citation_key: baldwin-2000-design-rules-power
+    role: canonical_reference
+    spine_nodes: [P1]
+    note: "DEFER — single-sentence modularity/design-rules tie; not a full engagement ([internal doc] §I)."
+  - citation_key: aaker-1991-managing-brand-equity
+    role: data_source
+    spine_nodes: [F3]
+    note: "Experimental INPUT (Case 2 incumbent vocabulary), not brand-theory engaged as subject."
+  - citation_key: aaker-1996-building-strong-brands
+    role: data_source
+    spine_nodes: [F3]
+  - citation_key: spence-1973-job-market-signaling
+    role: data_source
+    spine_nodes: [F4]
+    note: "Experimental INPUT (Case 3 cross-disciplinary vocabulary owning the bare key `signal`)."
+  - citation_key: ashburner-2000-gene-ontology
+    role: data_source
+    spine_nodes: [F5]
+    note: "Experimental INPUT (Case 4 OBO-scale vocabulary — the Gene Ontology; DANGLING_IMPORT grounded in GO's term-obsoletion governance). Not biomedical theory engaged as subject."
+  - citation_key: doerr-2003-cidoc-crm
+    role: data_source
+    spine_nodes: [F5]
+    note: "Experimental INPUT (Case 5 cultural-heritage standard — CIDOC-CRM / ISO 21127:2023; CROSS_IMPORT at volume). Not heritage theory engaged as subject."
+
+# ---------------------------------------------------------------------------
+# Open questions
+# ---------------------------------------------------------------------------
+open:
+  - "The final rung: a LIVING independent co-author authoring their own modules in this schema and resolving a genuine same-key CONFLICT in dialogue (vs the author-transcribed incumbent vocabularies here)."
+  - "Automated definition extraction from published prose (closes the transcription-effort threat, L1) — and a full-ontology run (the two added scale/volume pairs transcribe 12-13-term representative slices, not whole ontologies)."
+  - "DONE (2026-06-18): the two committed scale/volume pairs — Case 4 GO/annotator (DANGLING_IMPORT at OBO scale, grounded in OBO Principle-19 term-obsoletion) and Case 5 CIDOC-CRM/spectrometer (CROSS_IMPORT at 3x Case-1 volume). See O5/O6."
+  - "Embedding-assist layer to propose cross-key synonymy candidates (L2) for human confirmation."
+  - "INCOMPATIBLE_REFINE has no real-case instance (the schema forecloses it); whether a relaxed real ecosystem would produce it is open."
+
+# ---------------------------------------------------------------------------
+# Changelog
+# ---------------------------------------------------------------------------

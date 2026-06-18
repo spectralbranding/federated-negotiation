@@ -1,0 +1,72 @@
+# Brand-Spectrometer provenance author module for the CULTURAL-HERITAGE
+# federated negotiation experiment (Case 5: CROSS_IMPORT at volume).
+#
+# "The Brand Spectrometer, a perception-provenance instrument": a second
+# authority that models WHERE each perception atom came from -- which actor
+# produced which artifact, at which place and time-span, in which activity --
+# so that an observed brand signal can be traced to its emitting events. Rather
+# than re-inventing a people/objects/places/events provenance vocabulary, the
+# instrument REUSES CIDOC-CRM: it imports CIDOC classes by reference to express
+# the provenance of each captured artifact, and adds only the small SBT-specific
+# bridge term that CIDOC does not provide (the perception atom).
+#
+# This is the realistic, high-volume cultural-heritage reuse pattern: an
+# application ontology standing on CIDOC-CRM imports a dozen upstream classes
+# unchanged (CROSS_IMPORT) and narrows exactly one to its application reading
+# (CROSS_REFINE, with an explicit narrows_to). The DOMINANT interaction is clean
+# CROSS_IMPORT at a volume higher than any of the first three evaluation cases,
+# and the federation is CLEAN (gate passes): the instrument owns the one
+# finer-grained instrument concept (the capture instant) that CIDOC does not
+# provide, rather than dangling on it. (An honest alternative -- importing that
+# instant from CIDOC instead of owning it -- would have produced a DANGLING_IMPORT,
+# the Case-4 class; we deliberately keep Case 5 the clean-reuse-at-volume case so
+# it is distinct from Case 4's dangling story.)
+#
+# Deliberately NOT named ONTOLOGY.yaml and NOT a discovered ontology module, Loaded
+# explicitly by negotiate_modules.py via --author-b.
+
+paper_key: spectrometer_provenance_real
+schema_version: 0.1
+
+owns:
+  # The instrument's one locally-introduced bridge term (SBT-specific; CIDOC has
+  # no equivalent -- it is the unit of captured perception evidence).
+  - term_key: perception-atom
+    label: "perception atom"
+    canonical_form: "perception atom"
+    definition: "A single per-observer record of a brand conviction on one or more spectral dimensions, captured from one artifact at one place and time-span, the atomic unit the Brand Spectrometer aggregates into cohort-resolved perception clouds; its provenance is expressed by reference to CIDOC-CRM actors, objects, places, time-spans, and activities."
+    first_section: "spectrometer.atom"
+    note: "SBT/Brand-Spectrometer concept (ATOMIC_PERCEPTION_ARCHITECTURE); the bridge term that imports CIDOC provenance classes."
+
+  - term_key: capture-instant
+    label: "capture instant"
+    canonical_form: "capture instant"
+    definition: "The instantaneous point in time at which the Brand Spectrometer captures a perception atom from an artifact -- a zero-duration event the instrument records, distinct from the extended E52 Time-Span over which an artifact exists; introduced here because CIDOC-CRM models temporal extents (time-spans) rather than the instrument's capture instant."
+    first_section: "spectrometer.instant"
+    note: "SBT/Brand-Spectrometer concept; owned locally rather than imported, so the federation stays clean (CIDOC has no zero-duration instant class at this granularity)."
+
+imports:
+  # --- CIDOC-CRM classes the instrument reuses UNCHANGED -> CROSS_IMPORT ---
+  # (clean cross-author dependency edges; the volume case)
+  - {term_key: crm-entity}               # E1 -- root of everything provenance-tracked
+  - {term_key: crm-temporal-entity}      # E2 -- anything happening over time
+  - {term_key: crm-period}               # E4 -- a coherent cultural period a brand emits within
+  - {term_key: crm-event}                # E5 -- an event in which an artifact participates
+  - {term_key: crm-activity}             # E7 -- an intentional action by an actor
+  - {term_key: crm-physical-thing}       # E18 -- the persistent physical carrier of a signal
+  - {term_key: crm-person}               # E21 -- an individual observer or producer
+  - {term_key: crm-human-made-object}    # E22 -- a produced brand artifact
+  - {term_key: crm-actor}                # E39 -- the agent that produced/perceived an artifact
+  - {term_key: crm-time-span}            # E52 -- the temporal extent of a capture
+  - {term_key: crm-place}                # E53 -- where an artifact was produced/perceived
+  - {term_key: crm-type}                 # E55 -- the controlled-vocabulary type of an artifact
+
+refines:
+  # The instrument narrows E12 Production to its application reading
+  # (the production of a BRAND artifact specifically) -> CROSS_REFINE.
+  - term_key: crm-production
+    narrows_to: "the production event restricted to a brand-bearing human-made object whose emission the Brand Spectrometer subsequently captures and decomposes across the eight spectral dimensions"
+    note: "the instrument reads E12 Production prescriptively as brand-artifact production, narrowing the general CIDOC class"
+
+glossary_changelog:
+  - {date: 2026-06-18, op: lock, note: "Brand-Spectrometer provenance module: owns two local bridge terms (perception-atom, capture-instant), imports 12 CIDOC-CRM classes unchanged (CROSS_IMPORT volume), refines E12 Production (CROSS_REFINE); clean federation (gate passes)"}

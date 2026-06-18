@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# OS
+.DS_Store
+
+# Secrets — never commit
+.env
+*.key
+*.pem
+
+# Rendered PDFs are archived on Zenodo, not committed here
+*.pdf

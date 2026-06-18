@@ -1,0 +1,9 @@
+subject_id	predicate_id	object_id	mapping_justification	confidence	comment
+go:go-binding	skos:exactMatch	annotator:go-binding	semapv:LexicalMatching	0.95	CROSS_IMPORT
+go:go-biological-process	skos:exactMatch	annotator:go-biological-process	semapv:LexicalMatching	0.95	CROSS_IMPORT
+go:go-catalytic-activity	skos:exactMatch	annotator:go-catalytic-activity	semapv:LexicalMatching	0.95	CROSS_IMPORT
+go:go-cellular-component	skos:exactMatch	annotator:go-cellular-component	semapv:LexicalMatching	0.95	CROSS_IMPORT
+go:go-dna-templated-transcription	skos:exactMatch	annotator:go-dna-templated-transcription	semapv:LexicalMatching	0.95	CROSS_IMPORT
+go:go-molecular-function	skos:exactMatch	annotator:go-molecular-function	semapv:LexicalMatching	0.95	CROSS_IMPORT
+go:go-protein-binding	skos:exactMatch	annotator:go-protein-binding	semapv:LexicalMatching	0.95	CROSS_IMPORT
+go:go-signal-transduction	skos:exactMatch	annotator:go-signal-transduction	semapv:LexicalMatching	0.95	CROSS_IMPORT

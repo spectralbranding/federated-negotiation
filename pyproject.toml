@@ -1,0 +1,14 @@
+[project]
+name = "federated-negotiation"
+version = "1.0.0"
+description = "Deterministic six-class link-time compatibility check for federated ontology modules"
+authors = [{ name = "Dmitry Zharnikov" }]
+requires-python = ">=3.12"
+dependencies = ["pyyaml>=6.0"]
+
+[project.urls]
+Repository = "https://github.com/spectralbranding/federated-negotiation"
+Archive = "https://doi.org/10.5281/zenodo.20751395"
+
+# The reference linker is dependency-light: parsing two author module sets
+# requires only PyYAML. No network, credentials, or random seed.

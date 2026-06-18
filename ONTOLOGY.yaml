@@ -1,0 +1,116 @@
+# ONTOLOGY.yaml module - federated-negotiation
+#
+# Per-paper ontology module per the spine-first protocol
+# §"ONTOLOGY.yaml schema (v0.1)". owns = terms THIS paper introduces (unique
+# authority); imports = terms owned by other modules it uses (reference only);
+# refines = an explicit COMPATIBLE narrowing of an imported term.
+#
+# This module owns the federated negotiation taxonomy (the six interaction
+# classes), the content-addressed module + def_hash identity model, and the
+# federated-linker / federated-CI-gate concepts. It REFINES 2026u's
+# link-time-compatibility-check (the single-author check, narrowed to the
+# cross-author / federated case) and imports the shared substrate terms.
+
+paper_key: federated-negotiation
+schema_version: 0.1
+
+owns:
+  - term_key: federated-ontology-negotiation
+    label: "Federated ontology negotiation"
+    canonical_form: "federated ontology negotiation"
+    definition: "The cross-author generalization of single-author ontology linking: given two namespaced module sets from distinct authorities, mechanically classify every cross-owner term interaction and propose a typed, justified reconciliation, before either author reads the other's prose."
+    first_section: "Abstract / Introduction"
+    relations:
+      - {type: narrows, term_key: link-time-compatibility-check, note: "the cross-author / multi-owner case of the link-time check"}
+
+  - term_key: content-addressed-module
+    label: "Content-addressed vocabulary module"
+    canonical_form: "content-addressed module"
+    definition: "A small content-addressed triple (owner, term-set, import/refine relations) in which each owned term carries a definition whose sha256 (the def_hash) is the term's identity, so a changed definition is automatically a new identity with no human identifier-minting."
+    first_section: "Method — Module Schema and Content-Addressed Identity"
+
+  - term_key: def-hash-identity
+    label: "Definition-hash identity"
+    canonical_form: "def_hash"
+    definition: "The content-addressed identity of a term: the sha256 of its trimmed definition text (truncated to 16 hex). Two terms are the same iff their def_hash is byte-identical; a substantive definitional change yields a new identity automatically — the byte-exact strengthening of the OBO Foundry 'changed definition warrants a new identifier' policy."
+    first_section: "Method — Content-Addressed Identity"
+
+  - term_key: interaction-class
+    label: "Cross-owner interaction class"
+    canonical_form: "interaction class"
+    definition: "One of exactly six mutually-exclusive, exhaustive classes that a total classification function assigns to every cross-owner term interaction between two authors' module sets; each class carries a SKOS predicate, a reconciliation operation, and federated-CI gate semantics."
+    first_section: "Method — The Six Interaction Classes"
+    relations:
+      - {type: contrasts, term_key: federated-ci-gate, note: "three of the six classes fail the gate"}
+
+  - term_key: agreement-class
+    label: "AGREEMENT"
+    canonical_form: "AGREEMENT"
+    definition: "The interaction class where both authors own the same term_key with identical def_hash; resolved; SKOS exactMatch; reconciliation operation MERGE (either author may import the other's term unchanged)."
+    first_section: "Method — The Six Interaction Classes"
+    relations:
+      - {type: specializes, term_key: interaction-class, note: "resolved class"}
+
+  - term_key: cross-import-class
+    label: "CROSS_IMPORT"
+    canonical_form: "CROSS_IMPORT"
+    definition: "The interaction class where one author imports a term the other author owns; resolved; a clean cross-author dependency edge (SKOS exactMatch); no reconciliation operation needed."
+    first_section: "Method — The Six Interaction Classes"
+    relations:
+      - {type: specializes, term_key: interaction-class, note: "resolved class"}
+
+  - term_key: cross-refine-class
+    label: "CROSS_REFINE"
+    canonical_form: "CROSS_REFINE"
+    definition: "The interaction class where one author refines a term the other owns with an explicit narrows_to; resolved; SKOS narrowMatch; reconciliation operation REBASE (the refiner's term becomes a narrows edge onto the owner's term)."
+    first_section: "Method — The Six Interaction Classes"
+    relations:
+      - {type: specializes, term_key: interaction-class, note: "resolved class"}
+
+  - term_key: conflict-class
+    label: "CONFLICT"
+    canonical_form: "CONFLICT"
+    definition: "The interaction class where both authors own the same term_key with different def_hash; UNRESOLVED (fails the gate); SKOS closeMatch (same concept, divergent definition) or relatedMatch (key collides on distinct concepts); reconciliation operation NAMESPACE the colliding keys + curate the mapping, FORK the loser's key if the concepts truly differ."
+    first_section: "Method — The Six Interaction Classes"
+    relations:
+      - {type: specializes, term_key: interaction-class, note: "unresolved / gate-failing class"}
+
+  - term_key: incompatible-refine-class
+    label: "INCOMPATIBLE_REFINE"
+    canonical_form: "INCOMPATIBLE_REFINE"
+    definition: "The interaction class where one author refines a term the other owns WITHOUT a narrows_to; UNRESOLVED (fails the gate); reconciliation operation BLOCK until the refiner supplies an explicit narrowing. The well-formed-module discipline (refine requires narrows_to) forecloses this class on disciplined inputs."
+    first_section: "Method — The Six Interaction Classes"
+    relations:
+      - {type: specializes, term_key: interaction-class, note: "unresolved / gate-failing class"}
+
+  - term_key: dangling-import-class
+    label: "DANGLING_IMPORT"
+    canonical_form: "DANGLING_IMPORT"
+    definition: "The interaction class where one author imports or refines a term that NEITHER author owns; UNRESOLVED (fails the gate); reconciliation operation BLOCK until some author introduces and owns the term or the import is dropped."
+    first_section: "Method — The Six Interaction Classes"
+    relations:
+      - {type: specializes, term_key: interaction-class, note: "unresolved / gate-failing class"}
+
+  - term_key: federated-ci-gate
+    label: "Federated CI gate"
+    canonical_form: "federated CI gate"
+    definition: "The continuous-integration semantics of the federated linker: --gate exits nonzero (fails the build) iff any cross-owner interaction is in one of the three unresolved classes (CONFLICT, INCOMPATIBLE_REFINE, DANGLING_IMPORT); a passing gate certifies a linkable federation."
+    first_section: "Method — Reconciliation and Gate Semantics"
+
+  - term_key: reconciliation-operation
+    label: "Reconciliation operation"
+    canonical_form: "reconciliation operation"
+    definition: "One of lock / fork / rebase / merge — the single-author spine operation vocabulary lifted to operate across distinct owners, proposed per interaction class as the typed action that would reconcile it (MERGE for AGREEMENT, REBASE for CROSS_REFINE, NAMESPACE+FORK for CONFLICT, BLOCK for the dangling/incompatible cases)."
+    first_section: "Method — Reconciliation and Gate Semantics"
+
+imports:
+  - {term_key: research-as-repository}
+  - {term_key: peer-alignment-event}
+  - {term_key: substrate-as-repository}
+  - {term_key: perception-cloud}
+  - {term_key: cohort}
+  - {term_key: spectral-dimensions}
+
+refines:
+  - {term_key: link-time-compatibility-check, narrows_to: "the cross-author / multi-owner federated case (the single-author linker aborts on a unique-owner collision; the federated linker classifies it and proposes a reconciliation)", note: "scope: federated generalization"}
+
