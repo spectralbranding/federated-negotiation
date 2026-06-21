@@ -182,7 +182,7 @@ The reference linker (`negotiate_modules.py`) and the single-author linker it ge
 
 ## Acknowledgments
 
-AI assistants (Claude Opus 4.8, Gemini 2.5 Pro) were used for initial literature search, for software development — implementing and running the companion computation script(s) that reproduce the paper's reported numerical and simulation results, here the reference linker (`negotiate_modules.py`) and the single-author linker it generalizes (`build_ontology.py`), which produce the five negotiation experiments deterministically from author-transcribed module sets — and for editorial refinement; all theoretical claims, propositions, and interpretations are the author's sole responsibility.
+AI assistants (Claude Opus 4.8, Gemini 2.5 Pro) were used for initial literature search, for software development — implementing and running the companion computation scripts that reproduce the paper's reported numerical and simulation results, here the reference linker (`negotiate_modules.py`) and the single-author linker it generalizes (`build_ontology.py`), which produce the five negotiation experiments deterministically from author-transcribed module sets — and for editorial refinement; all theoretical claims, propositions, and interpretations are the author's sole responsibility.
 
 CRediT contributions: Dmitry Zharnikov — conceptualization, methodology, software, formal analysis, investigation, writing (original draft), writing (review and editing).
 
