@@ -37,7 +37,7 @@ boundary_conditions:
 observations:
   - id: O1
     statement: "SBT<->OST run (negotiate_modules.py on the two intra-author convergent module sets): NEGOTIATION REPORT sbt <-> ost — 4 CROSS_IMPORT + 2 CROSS_REFINE, 0 unresolved; 'Federation clean'."
-    raw_data_pointer: "experiments/{sbt,ost}/ ; record NEGOTIATION_REAL_CORPORA_SBT_OST_2026-06-13.md"
+    raw_data_pointer: "[internal path removed]{sbt,ost}/ ; record NEGOTIATION_REAL_CORPORA_SBT_OST_2026-06-13.md"
     instrument: "negotiate_modules.py (shared build_ontology.Module parser + def_hash)"
     timestamp: "2026-06-13"
     conditions_at_capture: "Python 3.12 + uv; deterministic, no network, no seed; live substrate/ontology neither read nor written"
@@ -47,7 +47,7 @@ observations:
     body_sections: ["Evaluation — Case 1 (Clean Intra-Author Federation)"]
   - id: O2
     statement: "SBT<->Aaker run: NEGOTIATION REPORT sbt <-> aaker — 2 DANGLING_IMPORT (brand, consumer), 0 CONFLICT, 0 other; 'Federation NOT clean'; --gate exit 1; tool-emitted SSSOM is header-only (DANGLING carries no mapping)."
-    raw_data_pointer: "experiments/ ; record NEGOTIATION_INDEPENDENT_AAKER_SBT_2026-06-14.md"
+    raw_data_pointer: "[internal path removed] ; record NEGOTIATION_INDEPENDENT_AAKER_SBT_2026-06-14.md"
     instrument: "negotiate_modules.py"
     timestamp: "2026-06-14"
     conditions_at_capture: "author A = SBT perceptual module (7 owned terms, def_hash matches live graph per integrity manifest); author B = faithfully transcribed Aaker incumbent module (9 owned terms, attributed per term)"
@@ -57,7 +57,7 @@ observations:
     body_sections: ["Evaluation — Case 2 (Independent Incumbent, Dangling Import)"]
   - id: O3
     statement: "SBT<->Spence run: NEGOTIATION REPORT sbt <-> spence — 1 CONFLICT on the bare shared key `signal` (same label, divergent def_hash; skos:closeMatch @ .5, semapv:ManualMappingCuration) + 1 DANGLING_IMPORT (labor-market); 'Federation NOT clean'; --gate exit 1."
-    raw_data_pointer: "experiments/ ; record NEGOTIATION_INDEPENDENT_SPENCE_SBT_2026-06-14.md"
+    raw_data_pointer: "[internal path removed] ; record NEGOTIATION_INDEPENDENT_SPENCE_SBT_2026-06-14.md"
     instrument: "negotiate_modules.py"
     timestamp: "2026-06-14"
     conditions_at_capture: "author A = SBT signal module; author B = Spence (1973) economic-signaling module; both legitimately own bare key `signal` with content-divergent definitions"
@@ -67,7 +67,7 @@ observations:
     body_sections: ["Evaluation — Case 3 (Cross-Disciplinary Homonym, Conflict)"]
   - id: O4
     statement: "Engineered fixture run (authorA<->authorB): exercises AGREEMENT (cohort, identical def_hash 89a748fe3919af1b), CONFLICT (brand-signal), CROSS_REFINE (perception-cloud, narrows_to), DANGLING_IMPORT (brand-equity) in one report — the partition coverage harness."
-    raw_data_pointer: "experiments/{authorA,authorB}/"
+    raw_data_pointer: "[internal path removed]{authorA,authorB}/"
     instrument: "negotiate_modules.py"
     timestamp: "2026-06-13"
     conditions_at_capture: "synthetic two-author fixture engineered to hit the four interesting classes including AGREEMENT (which the three real pairs do not produce)"
@@ -77,7 +77,7 @@ observations:
     body_sections: ["Method — The Six Interaction Classes", "Evaluation — Class Coverage"]
   - id: O5
     statement: "GO<->annotator run (OBO-scale): NEGOTIATION REPORT go <-> annotator — 8 CROSS_IMPORT (current GO terms) + 2 DANGLING_IMPORT (retired GO ids GO:0000005, GO:0006350) ; 'Federation NOT clean'; --gate exit 1; tool-emitted SSSOM carries the 8 CROSS_IMPORT rows, no row for the 2 DANGLING. The dangling is grounded in GO's OBO Principle-19 term-obsoletion governance (changed-definition => new ID), the byte-exact policy def_hash automates."
-    raw_data_pointer: "experiments/ ; record NEGOTIATION_OBO_SCALE_GO_2026-06-18.md"
+    raw_data_pointer: "[internal path removed] ; record NEGOTIATION_OBO_SCALE_GO_2026-06-18.md"
     instrument: "negotiate_modules.py"
     timestamp: "2026-06-18"
     conditions_at_capture: "author A = faithfully transcribed Gene Ontology slice (12 current terms, real GO IDs via EBI QuickGO); author B = downstream annotation resource importing 8 current GO terms + 2 obsoleted GO ids"
@@ -87,7 +87,7 @@ observations:
     body_sections: ["Evaluation — Case 4 (OBO-Scale Dangling Import)"]
   - id: O6
     statement: "CIDOC-CRM<->spectrometer run (cultural-heritage, CROSS_IMPORT at volume): NEGOTIATION REPORT cidoc <-> spectrometer — 12 CROSS_IMPORT (CIDOC classes reused unchanged) + 1 CROSS_REFINE (E12 Production narrowed to brand-artifact production, narrows_to) ; 0 unresolved; 'Federation clean'; --gate exit 0. Twelve cross-imports is 3x Case 1's four — the resolved classes scale to genuine cross-domain reuse."
-    raw_data_pointer: "experiments/ ; record NEGOTIATION_CULTURAL_HERITAGE_CIDOC_2026-06-18.md"
+    raw_data_pointer: "[internal path removed] ; record NEGOTIATION_CULTURAL_HERITAGE_CIDOC_2026-06-18.md"
     instrument: "negotiate_modules.py"
     timestamp: "2026-06-18"
     conditions_at_capture: "author A = faithfully transcribed CIDOC-CRM 7.1.3 slice (13 classes, verbatim scope notes, ISO 21127:2023); author B = Brand-Spectrometer provenance instrument reusing 12 CIDOC classes + owning 2 local bridge terms + refining E12"
@@ -108,7 +108,7 @@ methods:
     code_anchor: "code/negotiate_modules.py (negotiate / index_author); code/build_ontology.py (Module, def_hash)"
     reproducibility:
       seed: "deterministic — no RNG; def_hash = sha256(trimmed definition); classify is a pure function of two parsed module sets"
-      version: "v1.0.0"
+      version: "git: fix/s2 (sb-themec)"
       runtime_environment: "Python 3.12 + uv; no network, no credentials"
     cost: "$0 (no API calls)"
     provenance:
@@ -123,7 +123,7 @@ methods:
     code_anchor: "code/negotiate_modules.py (PREDICATE, OPERATION, UNRESOLVED, render_sssom)"
     reproducibility:
       seed: "deterministic"
-      version: "v1.0.0"
+      version: "git: fix/s2 (sb-themec)"
     provenance:
       created_by: "author"
       created_at: "2026-06-13"
@@ -135,7 +135,7 @@ methods:
     code_anchor: "code/build_ontology.py (def_hash); per-experiment integrity-manifest tables"
     reproducibility:
       seed: "deterministic; hashes reproduce byte-identically"
-      version: "v1.0.0"
+      version: "git: fix/s2"
     provenance:
       created_by: "tool:build_ontology.py"
       created_at: "2026-06-14"
@@ -526,12 +526,6 @@ external_anchors:
 # ---------------------------------------------------------------------------
 # Open questions
 # ---------------------------------------------------------------------------
-open:
-  - "The final rung: a LIVING independent co-author authoring their own modules in this schema and resolving a genuine same-key CONFLICT in dialogue (vs the author-transcribed incumbent vocabularies here)."
-  - "Automated definition extraction from published prose (closes the transcription-effort threat, L1) — and a full-ontology run (the two added scale/volume pairs transcribe 12-13-term representative slices, not whole ontologies)."
-  - "DONE (2026-06-18): the two committed scale/volume pairs — Case 4 GO/annotator (DANGLING_IMPORT at OBO scale, grounded in OBO Principle-19 term-obsoletion) and Case 5 CIDOC-CRM/spectrometer (CROSS_IMPORT at 3x Case-1 volume). See O5/O6."
-  - "Embedding-assist layer to propose cross-key synonymy candidates (L2) for human confirmation."
-  - "INCOMPATIBLE_REFINE has no real-case instance (the schema forecloses it); whether a relaxed real ecosystem would produce it is open."
 
 # ---------------------------------------------------------------------------
 # Changelog

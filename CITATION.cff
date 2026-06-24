@@ -14,6 +14,15 @@ identifiers:
   - type: doi
     value: "10.5281/zenodo.20751395"
     description: "Zenodo concept DOI (all versions)"
+keywords:
+  - ontology matching
+  - link-time compatibility
+  - content-addressed identity
+  - vocabulary reconciliation
+  - SSSOM
+  - federated knowledge graphs
+  - continuous integration
+  - scholarly communication
 license:
   - CC-BY-4.0
   - MIT
