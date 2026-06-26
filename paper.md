@@ -8,8 +8,6 @@ DOI: [10.5281/zenodo.20751395](https://doi.org/10.5281/zenodo.20751395)
 
 Working Paper v1.0.0 – June 2026
 
----
-
 ## Abstract
 
 When two research programs use the same word for different concepts, or different words for the same concept, the incompatibility is usually discovered late, by a reader reconstructing it from prose. This paper transfers the link-time compatibility check compilers and package managers apply to code to scholarly vocabularies. If each work declares the terms it owns, imports, and refines as a content-addressed module, a federated linker classifies every cross-author interaction into exactly one of six classes, proposes a typed reconciliation in a standard mapping format, and fails a continuous-integration gate on the three unresolved classes, before either author reads the other's prose. The classification is a deterministic function of two parsed module sets grounded in content-addressed definition-hash identity; it occupies the zero-uncertainty corner of the matching space and adds the reconciliation and gate layer matching omits. The author implements the method as a dependency-light tool and evaluates it on five real, independent vocabulary pairs that exercise the full class set: a clean intra-author federation, an incumbent vocabulary yielding a dangling reference, a cross-disciplinary vocabulary yielding a same-key conflict, a large biomedical ontology yielding dangling references grounded in its own term-obsoletion governance, and a cultural-heritage standard yielding cross-domain reuse at volume.
@@ -34,7 +32,7 @@ This paper makes three contributions, each mapped to a named section below.
 
 The method is the empirical companion to a broader infrastructure program that reconceives a research program as a version-controlled repository and a paper as a render of that repository at a point on its timeline [@zharnikov-2026-research-as-repository-git-native]. That program states the federated result in two paragraphs and points here for the mechanism; this paper owns the taxonomy, the tool, and the evaluation in depth, and assumes rather than re-argues the repository reconception.
 
-**Related Work and Positioning**
+## Related Work and Positioning
 
 **The matching problem and where this method sits.** Ontology matching is the problem of finding, for two ontologies, an alignment — a set of correspondences between their entities [@euzenat-shvaiko-2013-ontology-matching]. The canonical taxonomy of matching techniques distinguishes string and lexical methods, structural methods, instance-based methods, logic-based methods, and learned or machine-learning methods; the database-side antecedent of the same problem is schema matching, surveyed by Rahm and Bernstein [-@rahm-bernstein-2001-schema-matching-survey]. The standard evaluation campaign for matchers, the Ontology Alignment Evaluation Initiative, has run annual tracks since 2004 and reports precision and recall against reference alignments [@shvaiko-euzenat-2021-oaei-results].
 
@@ -44,7 +42,7 @@ This method deliberately does not compete in that campaign, and a precision/reca
 
 **Learned versus deterministic conflict resolution.** A second, more recent body of work detects or learns conflicts rather than preventing them. Continuous and collaborative ontology engineering studies the live reconciliation of evolving ontologies in a development workflow [@salamon-2026-continuous-ontology-engineering]. Benchmarks for inter-context conflicts in retrieval-augmented generation measure how well models detect inconsistencies across retrieved contexts, and report that detection is hard, especially under multi-hop reasoning [@lee-2025-magic-rag-conflict-benchmark]. Surveys of background knowledge and learned techniques in ontology matching map the similarity-and-learning branch this method deliberately defers [@portisch-2023-background-knowledge-matching]. The nearest work in spirit reuses ontology *matching* to drive ontology *versioning* — recasting version detection as a matching task solved with similarity measures and a large-language-model agent [@qiang-2024-om4ov]; this method takes the opposite stance on identity, refusing similarity entirely in favor of byte-equality of a content-addressed definition hash. The precise delta is two-fold. First, those methods are *detective* or *learned*: they identify or predict conflicts, often after the fact, with a confidence attached. This method is *preventive* and *deterministic*: it refuses to link a federation containing an unresolved interaction, with no confidence threshold to tune. Second, this method does not aim to replace learned reconciliation; it is the zero-uncertainty baseline against which learned methods are measured — the point in the space where the answer is a function of declared identity alone. To the author's knowledge, no prior work frames vocabulary alignment as a compile or link-time check, nor transfers a software link-time compatibility check to terminology integration; this is stated defensively, as a gap a grounded literature search did not fill, not as proven non-existence.
 
-**Method**
+## Method
 
 ***The Module Schema and Content-Addressed Identity***
 
@@ -56,7 +54,7 @@ A *module* is a content-addressed triple: an owner (the authority that authored 
 
 Given two authors' module sets, every cross-owner interaction falls into exactly one of six classes. Table 1 gives, for each class, its trigger, whether it is resolved, the proposed mapping predicate, and the reconciliation operation. The reconciliation operations — lock, fork, rebase, merge — are the single-author operation vocabulary lifted to act across distinct owners rather than across one author's timeline.
 
-Table 1: The Six Cross-Owner Interaction Classes and Their Reconciliation.
+**Table 1.** The Six Cross-Owner Interaction Classes and Their Reconciliation.
 
 | Class | Trigger | Resolved? | Mapping predicate | Reconciliation operation |
 |---|---|---|---|---|
@@ -85,11 +83,11 @@ Determinism replaces statistical identification. The `def_hash` is a pure functi
 
 The federated linker is a strict generalization of a single-author one, not a replacement. The single-author linker enforces one owner per term and *aborts* on a unique-owner collision: within one corpus, two modules claiming the same key is a bug. That is correct when modules are temporal slices of one author's program, reconciled by rebasing the author's later self onto the earlier. Across authors the same collision is not a bug but a negotiation to surface, so the federated linker replaces abort-on-collision with classify-and-propose. Critically, both regimes use the *same parser and the same hash function*: the federated tool imports the single-author linker's module reader and `def_hash` directly, so the two can never disagree on how a module is read. The single-author case is the degenerate federation in which the two authors are one person at two times and the negotiation collapses to a rebase against one's own past self.
 
-**The Reference Implementation**
+## The Reference Implementation
 
 The method is implemented as a single dependency-light tool that reuses the single-author linker's module parser and content-addressing. It loads each author's modules from a directory (the directory name is the author's namespace for qualifying colliding keys), indexes each author into owned terms with their hashes, imports, and refines, classifies every cross-owner interaction by the rules of Table 1, and prints a report grouped by class with the proposed reconciliation per finding. With one flag it also writes the proposed term-to-term mappings as a standard mapping table — emitting a row only for the classes that yield a correspondence (agreement, conflict, cross-refine, cross-import), since a dangling import is a missing-owner gap with no correspondence to assert. With another flag it exits nonzero whenever any interaction is unresolved — the continuous-integration gate. Default behavior reports and exits zero: surfacing incompatibilities is the point, so unlike the single-author linker it never aborts. The tool requires no network, no credentials, and no random seed; its only side effect is the optional mapping file it is asked to write, and it neither reads nor writes the live substrate during a run.
 
-**Evaluation**
+## Evaluation
 
 The evaluation is an existence proof in the case-study style appropriate to a tools-and-systems contribution, not a statistical benchmark. Five real, independent vocabulary pairs were chosen to exercise the full class set across increasing scale and domain distance; each run is a single deterministic, byte-reproducible execution with a pre-registered hypothesis and explicit falsifier and an integrity manifest. The first three pairs establish full class coverage on small, hand-curated vocabularies; the last two extend the resolved and unresolved classes to larger, genuinely cross-domain standards — a large biomedical ontology and a cultural-heritage standard. The vocabularies are inputs to the experiments, not the subject of the paper; the paper argues the mechanism and its class coverage, not the brand, economic, biomedical, or heritage theory the vocabularies encode.
 
@@ -119,7 +117,7 @@ The fifth pair tests whether the *resolved* classes — clean cross-author reuse
 
 Across the five real pairs the linker classified every interaction and terminated, with no interaction left unclassified and no errors on real modules. The pairs cover five of the six classes: cross-import (Cases 1, 4, and 5), cross-refine (Cases 1 and 5), dangling-import (Cases 2, 3, and 4), and conflict (Case 3). The two added pairs extend the existing classes to larger, cross-domain standards — dangling-import grounded in an independent ontology's term-obsoletion governance at scale (Case 4), and cross-import at three times Case 1's volume on a cultural-heritage standard (Case 5) — rather than adding a new class. The sixth class, agreement, requires two authors to own a key with *identical* definitions; it is realized on an engineered two-author fixture in which a shared `cohort` definition hashes identically and is classified `AGREEMENT` (exact-match, merge), alongside a constructed conflict, cross-refine, and dangling import. The remaining class, incompatible-refine, has no real-case instance because the module discipline requires a narrowing clause on every refine — it is a guard the well-formed-module convention forecloses, surfacing only when an author violates the convention. Table 2 summarizes the coverage.
 
-Table 2: Interaction-Class Coverage Across the Evaluation Pairs.
+**Table 2.** Interaction-Class Coverage Across the Evaluation Pairs.
 
 | Pair | Owner A / Owner B | Classes produced | Unresolved | Gate |
 |---|---|---|---|---|
@@ -132,7 +130,7 @@ Table 2: Interaction-Class Coverage Across the Evaluation Pairs.
 
 *Notes*: Resolved classes are CROSS_IMPORT, CROSS_REFINE, AGREEMENT; unresolved (gate-failing) classes are CONFLICT, INCOMPATIBLE_REFINE, DANGLING_IMPORT. The five real pairs cover five of six classes; Cases 4 and 5 extend DANGLING_IMPORT (at OBO scale, grounded in term-obsoletion governance) and CROSS_IMPORT (at three times Case 1's volume) to larger cross-domain standards rather than adding a class. The fixture realizes AGREEMENT; INCOMPATIBLE_REFINE has no real instance because the module schema requires a `narrows_to` on every refine.
 
-**Scope and Boundary Conditions**
+## Scope and Boundary Conditions
 
 The method applies only where four conditions hold; outside them it is inapplicable or inferior to human or learned negotiation. Naming each condition, with a real vocabulary that falls outside it, is the honest answer to "when does this not work."
 
@@ -146,7 +144,7 @@ The method applies only where four conditions hold; outside them it is inapplica
 
 Finally, a falsifier for the general claim, beyond the per-case falsifiers above: if more than a small fraction of real, well-formed scholarly vocabulary pairs encountered in the wild contained a cross-owner interaction that the six classes could not uniquely classify — an unclassifiable seventh class — the taxonomy would be falsified.
 
-**Threats to Validity**
+## Threats to Validity
 
 *Transcription, not living co-authorship (the principal limitation).* All five real module sets are author-transcribed: the perception author transcribed the incumbent Aaker, cross-disciplinary Spence, biomedical Gene Ontology, and cultural-heritage CIDOC-CRM vocabularies from published sources, and each conflict is resolved only as a tool-proposed curation. The independence is in each vocabulary's provenance — a different author, a different discipline, decades earlier, not built to be compatible — not yet in a living co-author's authoring act. A transcriber's framing choices (which primitives to import, how to word a definition) remain the transcriber's. The paper therefore claims the mechanism and its coverage of the class set on real vocabularies, not multi-author adoption as a validated social practice. The effort to transcribe each incumbent module was modest — on the order of a dozen attributed term definitions per vocabulary — and an automated path exists: extracting candidate definitions from published prose, then hand-confirming, would remove the transcription bottleneck and is named here as future work.
 
@@ -154,7 +152,7 @@ Finally, a falsifier for the general claim, beyond the per-case falsifiers above
 
 *The conflict null is contingent.* The absence of a same-key conflict in Case 2 is evidence about *this* vocabulary's naming discipline, not a general claim that no incumbent vocabulary can conflict with a perception vocabulary. A vocabulary that owned a bare `brand-image` or `positioning` key *would* conflict; the null is "qualified naming avoids the collision," not "no collision is possible."
 
-**Discussion**
+## Discussion
 
 *Theoretical implications.* The contribution is a *method*, instantiated in a tool, not a new matcher and not a new theory. Its theoretical weight is the demonstration that a useful and previously unoccupied point exists in the ontology-matching space: the deterministic, content-addressed, link-time vertex, where the answer is a function of declared identity alone and the value added is classification plus reconciliation plus a gate. Three failures that the matching literature leaves dangling become preventable link-time errors under this frame: an incumbent vocabulary's repeated dangling imports against newer ontologies; a cross-disciplinary homonym's conflict against a formalized sense of the same word; and the observation that even clean intra-author federation requires explicit cross-refine reconciliation to stay machine-actionable.
 
@@ -168,25 +166,19 @@ Finally, a falsifier for the general claim, beyond the per-case falsifiers above
 
 *Future research.* The open rung is a living, genuinely independent co-author who authors their own modules in this schema and resolves a genuine same-key conflict in dialogue. Beyond it: automated definition extraction to remove the transcription bottleneck and enable a full-ontology run (the two scale-and-volume pairs added here transcribe representative slices, not whole ontologies); and an embedding-assisted layer to propose cross-key synonymy candidates for human confirmation, closing the one correspondence type the key-based linker cannot reach.
 
-**Conclusion**
+## Conclusion
 
 Two vocabularies that share a word rarely share its meaning, and the incompatibility is usually found late, in prose, by hand. This paper transferred the link-time compatibility check of compilers and package managers to scholarly vocabularies: declare each work's terms as a content-addressed module, classify every cross-author interaction into one of six classes, propose a typed reconciliation, and fail a continuous-integration gate on the three unresolved classes — all before either author reads the other's prose. The classification is deterministic and grounded in content-addressed definition-hash identity, and it adds the classification, reconciliation, and gate layer that matching leaves to judgment. On five real, independent vocabulary pairs the method exercised the full class set, producing a clean federation, a genuine dangling reference, a genuine same-key conflict, dangling references grounded in a large biomedical ontology's own term-obsoletion governance, and clean cross-domain reuse at volume against a cultural-heritage standard, each deterministically and reproducibly. The mechanism is established; the remaining work is to run it between living co-authors at scale.
-
----
 
 ## Data and Code Availability
 
 The reference linker (`negotiate_modules.py`) and the single-author linker it generalizes (`build_ontology.py`) are deterministic, dependency-light, and require no network, credentials, or random seed. At submission, the tool and the complete `experiments/` tree — the five evaluation pairs' module sets, the verbatim negotiation reports, the emitted and hand-curated mapping tables, the integrity manifests, and the per-case pre-registered hypotheses and falsifiers — are released as an independent, self-contained archive, not gated on the publication of any other paper. The code and experiments are published as an independent, self-contained archive — the source repository at https://github.com/spectralbranding/federated-negotiation and a permanent Zenodo deposit (concept DOI 10.5281/zenodo.20751395; version 1.0.0 DOI 10.5281/zenodo.20751396, deposited 18 June 2026) — both carrying the `experiments/` tree and a one-command reproduction script (`reproduce.sh`). Each run reproduces byte-identically from the published module sets and run command; the integrity manifest's definition hashes are recomputable from the published definitions.
-
----
 
 ## Acknowledgments
 
 AI assistants (Claude Opus 4.8, Gemini 2.5 Pro) were used for initial literature search, for software development — implementing and running the companion computation scripts that reproduce the paper's reported numerical and simulation results, here the reference linker (`negotiate_modules.py`) and the single-author linker it generalizes (`build_ontology.py`), which produce the five negotiation experiments deterministically from author-transcribed module sets — and for editorial refinement; all theoretical claims, propositions, and interpretations are the author's sole responsibility.
 
 CRediT contributions: Dmitry Zharnikov — conceptualization, methodology, software, formal analysis, investigation, writing (original draft), writing (review and editing).
-
----
 
 ## References
 
