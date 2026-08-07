@@ -3,7 +3,14 @@
 # Requires Python 3.12 + pyyaml (see pyproject.toml). Run: ./reproduce.sh
 set -uo pipefail
 cd "$(dirname "$0")"
-PY="python"
+# Prefer `uv` (fetches PyYAML with zero setup); else python3/python with PyYAML
+# already installed (see pyproject.toml). A bare `python` is not assumed: on most
+# current systems it does not exist, and the published one-command reproduction
+# then fails before running a single case.
+if command -v uv >/dev/null 2>&1; then PY="uv run --with pyyaml python"
+elif command -v python3 >/dev/null 2>&1; then PY=python3
+elif command -v python >/dev/null 2>&1; then PY=python
+else echo "No uv/python3/python found. Install Python 3.12+ (see pyproject.toml)." >&2; exit 1; fi
 TOOL="code/negotiate_modules.py"
 E="experiments"
 
@@ -12,7 +19,7 @@ run() {
   echo "=================================================================="
   echo "CASE: $1"
   echo "------------------------------------------------------------------"
-  "$PY" "$TOOL" --author-a "$2" --author-b "$3" | tail -n 3
+  $PY "$TOOL" --author-a "$2" --author-b "$3" | tail -n 3
 }
 
 # Case 1 — clean intra-author federation (SBT <-> OST): 6 interactions, 0 unresolved.
