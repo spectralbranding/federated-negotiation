@@ -25,9 +25,9 @@
 #     Approach to Semantic Interoperability of Metadata." AI Magazine, 24(3),
 #     75-92. DOI: 10.1609/aimag.v24i3.1720 -- the foundational CIDOC-CRM paper.
 #
-# Deliberately NOT named ONTOLOGY.yaml and NOT a discovered ontology module, so the
+# Deliberately NOT named ONTOLOGY.yaml and NOT under [internal path removed], so the
 # live build_ontology.py linker never picks it up. Loaded explicitly by
-# negotiate_modules.py via --author-a. See ../README.md
+# negotiate_modules.py via --author-a. See [internal path removed]
 
 paper_key: cidoc_crm_real
 schema_version: 0.1

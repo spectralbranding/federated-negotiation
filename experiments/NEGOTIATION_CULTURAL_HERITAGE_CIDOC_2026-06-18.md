@@ -7,9 +7,9 @@
 | **Operator** | Dmitry Zharnikov (with Claude Opus 4.8) |
 | **Classification** | Computational / deterministic / logical — no stochastic component, no statistical inference; the outcome is a fixed function of the inputs and the tool. |
 | **Instrument** | `code/negotiate_modules.py` (federated multi-author generalization of the single-author linker `build_ontology.py`). Shared parser `build_ontology.Module` + `def_hash` + `_norm_ref`. |
-| **Protocol** | `experiments/negotiation_cultural_heritage_cidoc`; companion `experiments/negotiation_cultural_heritage_cidoc`. |
-| **Carrying paper** | `experiments/negotiation_cultural_heritage_cidoc` (Case 5). |
-| **Companion experiments** | Cases 1–3 (`experiments/negotiation_cultural_heritage_cidoc*`); Case 4 (`NEGOTIATION_OBO_SCALE_GO_2026-06-18.md`). This is the cross-import-at-volume rung. |
+| **Protocol** | `[internal path removed]`; companion `[internal path removed]`. |
+| **Carrying paper** | `[internal path removed]` (Case 5). |
+| **Companion experiments** | Cases 1–3 (`experiments/NEGOTIATION_*`); Case 4 (`NEGOTIATION_OBO_SCALE_GO_2026-06-18.md`). This is the cross-import-at-volume rung. |
 | **Environment** | Python 3.12, `uv`; macOS (darwin). Substrate and live ontology present but neither read nor written by the run. |
 | **Pre-registration** | Post-hoc record of a single confirmatory run. The §1 hypotheses were the design intent fixed before execution; no run was discarded or re-specified after seeing results. |
 | **Data availability** | All inputs and outputs are listed in §9 and earmarked for the public mirror when the carrying paper is published (§9). |
@@ -40,7 +40,7 @@ CIDOC-CRM is the right test: its event-centric model of actors, objects, places,
 
 ### 2.1 Author A — CIDOC-CRM module (new; faithfully transcribed, sourced per class)
 
-`experiments/negotiation_cultural_heritage_cidoc` (`paper_key: cidoc_crm_real`) **owns thirteen** CIDOC-CRM classes, each definition a verbatim quotation of the first one-to-two sentences of the class's official scope note (CIDOC-CRM version 7.1.3, February 2024), carrying its real class identifier (E-number):
+`experiments/negotiation_cultural_heritage_cidoc/cidoc/cidoc_crm.yaml` (`paper_key: cidoc_crm_real`) **owns thirteen** CIDOC-CRM classes, each definition a verbatim quotation of the first one-to-two sentences of the class's official scope note (CIDOC-CRM version 7.1.3, February 2024), carrying its real class identifier (E-number):
 
 | term_key | E-number | label |
 |---|---|---|
@@ -62,7 +62,7 @@ CIDOC-CRM is the right test: its event-centric model of actors, objects, places,
 
 ### 2.2 Author B — Brand-Spectrometer provenance module (new)
 
-`experiments/negotiation_cultural_heritage_cidoc` (`paper_key: spectrometer_provenance_real`) models a perception-provenance instrument that builds on CIDOC-CRM. It **owns two** local bridge terms (`perception-atom`, the SBT-specific unit of captured perception evidence; `capture-instant`, the instrument's zero-duration capture event, which CIDOC does not provide at that granularity), **imports twelve** CIDOC-CRM classes unchanged (the `CROSS_IMPORT` set), and **refines one** CIDOC class (`crm-production`/E12, narrowed with an explicit `narrows_to` to brand-artifact production — the `CROSS_REFINE`).
+`experiments/negotiation_cultural_heritage_cidoc/spectrometer/provenance_module.yaml` (`paper_key: spectrometer_provenance_real`) models a perception-provenance instrument that builds on CIDOC-CRM. It **owns two** local bridge terms (`perception-atom`, the SBT-specific unit of captured perception evidence; `capture-instant`, the instrument's zero-duration capture event, which CIDOC does not provide at that granularity), **imports twelve** CIDOC-CRM classes unchanged (the `CROSS_IMPORT` set), and **refines one** CIDOC class (`crm-production`/E12, narrowed with an explicit `narrows_to` to brand-artifact production — the `CROSS_REFINE`).
 
 The instrument deliberately **owns** the finer-grained `capture-instant` concept rather than importing it from CIDOC, keeping the federation clean and distinct from Case 4's dangling story. An honest alternative — importing that instant from CIDOC, which does not own it — would have produced a `DANGLING_IMPORT` (the Case-4 class); Case 5 is deliberately the clean-reuse-at-volume case.
 
@@ -88,7 +88,7 @@ The instrument deliberately **owns** the finer-grained `capture-instant` concept
 
 ### 2.4 Instrument and isolation
 
-`negotiate_modules.py` parses both modules with the single-author linker's parser, then classifies every cross-owner interaction. Both module files live only under `experiments/negotiation_cultural_heritage_cidoc`; neither is in `experiments/negotiation_cultural_heritage_cidoc` nor named `ONTOLOGY.yaml`, so the live linker never discovers them. The committed substrate and live ontology were neither read nor written.
+`negotiate_modules.py` parses both modules with the single-author linker's parser, then classifies every cross-owner interaction. Both module files live only under `experiments/negotiation_cultural_heritage_cidoc/`; neither is in `[internal path removed]` nor named `ONTOLOGY.yaml`, so the live linker never discovers them. The committed substrate and live ontology were neither read nor written.
 
 ---
 
@@ -96,9 +96,9 @@ The instrument deliberately **owns** the finer-grained `capture-instant` concept
 
 ```
 uv run python code/negotiate_modules.py \
-    --author-a experiments/negotiation_cultural_heritage_cidoc \
-    --author-b experiments/negotiation_cultural_heritage_cidoc \
-    --sssom experiments/negotiation_cultural_heritage_cidoc
+    --author-a experiments/negotiation_cultural_heritage_cidoc/cidoc \
+    --author-b experiments/negotiation_cultural_heritage_cidoc/spectrometer \
+    --sssom experiments/negotiation_cultural_heritage_cidoc/cidoc_spectrometer.sssom.tsv
 ```
 
 Repeated with `--gate` for the CI verdict. **Determinism:** no random component, no seed; `def_hash` is a pure function of definition text and the classifier a pure function of the two parsed module sets.
@@ -143,7 +143,7 @@ Federation clean: all interactions are agreements, clean imports, or compatible 
 
 ## 5. The SSSOM mapping proposal
 
-`experiments/negotiation_cultural_heritage_cidoc` — twelve `CROSS_IMPORT` rows (`skos:exactMatch` / `semapv:LexicalMatching` at .95, clean dependency edges) and one `CROSS_REFINE` row (`skos:narrowMatch` / `semapv:ManualMappingCuration` at .5, the E12 narrowing the curators confirm). Every interaction yields a mapping row here (unlike Case 4, where the dangling imports carried none), because all thirteen interactions are resolved correspondences.
+`experiments/negotiation_cultural_heritage_cidoc/cidoc_spectrometer.sssom.tsv` — twelve `CROSS_IMPORT` rows (`skos:exactMatch` / `semapv:LexicalMatching` at .95, clean dependency edges) and one `CROSS_REFINE` row (`skos:narrowMatch` / `semapv:ManualMappingCuration` at .5, the E12 narrowing the curators confirm). Every interaction yields a mapping row here (unlike Case 4, where the dangling imports carried none), because all thirteen interactions are resolved correspondences.
 
 ---
 
@@ -177,14 +177,14 @@ Anyone with the repository and Python 3.12 can reproduce this record exactly: (i
 
 **Internal artifacts (canonical SSOT, present now):**
 
-- `experiments/negotiation_cultural_heritage_cidoc` — CIDOC-CRM author module (new)
-- `experiments/negotiation_cultural_heritage_cidoc` — Brand-Spectrometer provenance module (new)
-- `experiments/negotiation_cultural_heritage_cidoc` — tool-emitted SSSOM (12 CROSS_IMPORT + 1 CROSS_REFINE)
+- `experiments/negotiation_cultural_heritage_cidoc/cidoc/cidoc_crm.yaml` — CIDOC-CRM author module (new)
+- `experiments/negotiation_cultural_heritage_cidoc/spectrometer/provenance_module.yaml` — Brand-Spectrometer provenance module (new)
+- `experiments/negotiation_cultural_heritage_cidoc/cidoc_spectrometer.sssom.tsv` — tool-emitted SSSOM (12 CROSS_IMPORT + 1 CROSS_REFINE)
 - this experiment record
 
 The committed substrate and live ontology were not modified by the run. The CIDOC-CRM source is registered as VERIFIED substrate source `doerr-2003-cidoc-crm`.
 
-**Publication plan.** Published to the public mirror when the carrying paper (`federated_negotiation`) is published, under an `experiments/negotiation-cultural-heritage-cidoc/` directory, alongside Cases 1–4, per `experiments/negotiation_cultural_heritage_cidoc` and PAQS items 37a–37f.
+**Publication plan.** Published to the public mirror when the carrying paper (`federated_negotiation`) is published, under an `experiments/negotiation-cultural-heritage-cidoc/` directory, alongside Cases 1–4, per `[internal path removed]` and PAQS items 37a–37f.
 
 ---
 

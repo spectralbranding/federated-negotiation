@@ -22,7 +22,7 @@
 # the Case-4 class; we deliberately keep Case 5 the clean-reuse-at-volume case so
 # it is distinct from Case 4's dangling story.)
 #
-# Deliberately NOT named ONTOLOGY.yaml and NOT a discovered ontology module, Loaded
+# Deliberately NOT named ONTOLOGY.yaml and NOT under [internal path removed] Loaded
 # explicitly by negotiate_modules.py via --author-b.
 
 paper_key: spectrometer_provenance_real

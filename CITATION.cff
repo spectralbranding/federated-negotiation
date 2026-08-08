@@ -7,7 +7,7 @@ authors:
     orcid: "https://orcid.org/0009-0000-6893-9231"
 title: "Negotiating Vocabularies at Link Time: A Deterministic Six-Class Compatibility Check for Federated Ontology Modules"
 version: 1.0.0
-date-released: 2026-06-14
+date-released: 2026-06-18
 url: "https://doi.org/10.5281/zenodo.20751395"
 repository-code: "https://github.com/spectralbranding/federated-negotiation"
 identifiers:

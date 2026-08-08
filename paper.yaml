@@ -13,7 +13,7 @@ meta:
     orcid: 0009-0000-6893-9231
     affiliation: Independent Researcher
   doi: 10.5281/zenodo.20751395
-  date: '2026-06-01'
+  date: '2026-06-18'
   venue: Preprint
   license: CC-BY-4.0
   keywords:
@@ -147,7 +147,7 @@ dependencies:
 - relationship: extends
   claim: Parent (R14 'Research as Repository'). 2026u keeps the condensed §5.5/§5.6 result + a forward
     reference; THIS paper owns the taxonomy, the tool, and the three-case evaluation in depth and does
-    NOT re-argue the repository reconception (non-overlap contract, PHASE_0_THESIS §0).
+    NOT re-argue the repository reconception (non-overlap contract).
   critical: false
   doi: 10.5281/zenodo.19294864
 - relationship: applies
@@ -204,7 +204,7 @@ dependencies:
   claim: 'anchor: wilkinson-2016-fair-guiding-principles'
   doi: 10.1038/sdata.2016.18
 - relationship: extends
-  claim: DEFER — single-sentence modularity/design-rules tie; not a full engagement (PREDRAFT_BUNDLE §I).
+  claim: DEFER — single-sentence modularity/design-rules tie; not a full engagement.
   doi: 10.7551/mitpress/2366.001.0001
 - relationship: extends
   claim: Experimental INPUT (Case 2 incumbent vocabulary), not brand-theory engaged as subject.

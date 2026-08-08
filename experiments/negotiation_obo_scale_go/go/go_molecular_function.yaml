@@ -25,7 +25,7 @@
 #     CIDOC-independent, retrieved 2026-06-18.
 #
 # OBO PRINCIPLE 19 ("term meaning stability" / changed-definition => new ID) is
-# the load-bearing fact of this experiment. The GO Consortium does NOT silently
+# the central fact of this experiment. The GO Consortium does NOT silently
 # mutate a term's meaning: when a term goes out of scope or is mis-defined, the
 # term is OBSOLETED (its ID persists, tagged obsolete, all relations stripped),
 # and -- since 2022 -- a successor is referenced via the `replaced_by` OBO tag
@@ -35,9 +35,9 @@
 # it does NOT own the obsoleted IDs (GO:0000005, GO:0006350) that the annotator
 # module still imports -> a genuine, OBO-grounded DANGLING_IMPORT at realistic scale.
 #
-# Deliberately NOT named ONTOLOGY.yaml and NOT a discovered ontology module, so the
+# Deliberately NOT named ONTOLOGY.yaml and NOT under [internal path removed], so the
 # live build_ontology.py linker never picks it up. Loaded explicitly by
-# negotiate_modules.py via --author-a. See ../README.md
+# negotiate_modules.py via --author-a. See [internal path removed]
 
 paper_key: go_real
 schema_version: 0.1

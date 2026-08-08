@@ -7,10 +7,10 @@
 | **Operator** | Dmitry Zharnikov (with Claude Opus 4.8) |
 | **Classification** | Computational / deterministic / logical — no stochastic component, no statistical inference; the outcome is a fixed function of the inputs and the tool. |
 | **Instrument** | `code/negotiate_modules.py` (federated multi-author generalization of the single-author linker `build_ontology.py`). Shared parser `build_ontology.Module` + `def_hash` + `_norm_ref`. |
-| **Protocol** | `experiments/negotiation_obo_scale_go`; companion `experiments/negotiation_obo_scale_go`. |
-| **Carrying paper** | `experiments/negotiation_obo_scale_go` (Case 4). |
-| **Companion experiments** | Cases 1–3 (`experiments/negotiation_obo_scale_go*`); Case 5 (`NEGOTIATION_CULTURAL_HERITAGE_CIDOC_2026-06-18.md`). This is the first OBO-Foundry-grounded pair and the dangling-at-scale rung. |
-| **Environment** | Python 3.12, `uv`; macOS (darwin). Substrate `experiments/negotiation_obo_scale_go` and the live ontology `experiments/negotiation_obo_scale_go*.yaml` present but neither read nor written by the run. |
+| **Protocol** | `[internal path removed]`; companion `[internal path removed]`. |
+| **Carrying paper** | `[internal path removed]` (Case 4). |
+| **Companion experiments** | Cases 1–3 (`experiments/NEGOTIATION_*`); Case 5 (`NEGOTIATION_CULTURAL_HERITAGE_CIDOC_2026-06-18.md`). This is the first OBO-Foundry-grounded pair and the dangling-at-scale rung. |
+| **Environment** | Python 3.12, `uv`; macOS (darwin). Substrate `[internal path removed]` and the live ontology `[internal path removed]*.yaml` present but neither read nor written by the run. |
 | **Pre-registration** | Post-hoc record of a single confirmatory run. The §1 hypotheses (including the directional prediction in H2) were the design intent fixed before execution; no run was discarded or re-specified after seeing results. |
 | **Data availability** | All inputs and outputs are listed in §9 and earmarked for the public mirror when the carrying paper is published (§9). |
 
@@ -40,7 +40,7 @@ GO is the canonical test of the identity model the paper's P3 advances: GO does 
 
 ### 2.1 Author A — Gene Ontology module (new; faithfully transcribed, sourced per term)
 
-`experiments/negotiation_obo_scale_go` (`paper_key: go_real`) **owns twelve** current, active GO terms, each a faithful transcription of the real GO definition served by the EBI QuickGO term API, carrying its real, stable GO ID:
+`experiments/negotiation_obo_scale_go/go/go_molecular_function.yaml` (`paper_key: go_real`) **owns twelve** current, active GO terms, each a faithful transcription of the real GO definition served by the EBI QuickGO term API, carrying its real, stable GO ID:
 
 | term_key | GO ID | label |
 |---|---|---|
@@ -61,7 +61,7 @@ GO is the canonical test of the identity model the paper's P3 advances: GO does 
 
 ### 2.2 Author B — downstream annotation-resource module (new)
 
-`experiments/negotiation_obo_scale_go` (`paper_key: go_annotator_real`) models a downstream gene/protein annotation resource that consumes GO by reference. It **owns one** local term (`annotation-evidence-code`, its own evidence concept), **imports eight** current GO terms (the `CROSS_IMPORT` set), and **imports two retired GO IDs** that the current GO slice does not own (the `DANGLING_IMPORT` set):
+`experiments/negotiation_obo_scale_go/annotator/annotation_resource.yaml` (`paper_key: go_annotator_real`) models a downstream gene/protein annotation resource that consumes GO by reference. It **owns one** local term (`annotation-evidence-code`, its own evidence concept), **imports eight** current GO terms (the `CROSS_IMPORT` set), and **imports two retired GO IDs** that the current GO slice does not own (the `DANGLING_IMPORT` set):
 
 - `go-0000005-ribosomal-chaperone-activity` — **GO:0000005**, `isObsolete: true`, `replacedBy: null`, `consider: null`. Verbatim QuickGO comment: *"This term was made obsolete because it refers to a class of gene products and a biological process rather than a molecular function."* No active successor — a legacy annotation dangles.
 - `go-0006350-transcription` — **GO:0006350** "transcription", a legacy ID obsoleted and (post-2022 policy) `replaced_by` the narrower-defined `GO:0006351` "DNA-templated transcription". A legacy annotation that still cites the **old** GO:0006350 references a term the current GO slice does not own.
@@ -89,7 +89,7 @@ Each owned GO term's `def_hash` (sha256 of the trimmed definition, truncated to 
 
 ### 2.4 Instrument and isolation
 
-`negotiate_modules.py` parses both authors' modules with the exact parser the single-author linker uses, then classifies every cross-owner interaction (shared `term_key`s and explicit `imports`/`refines` only). Both module files live only under `experiments/negotiation_obo_scale_go`; neither is in `experiments/negotiation_obo_scale_go` nor named `ONTOLOGY.yaml`, so the live `build_ontology.discover_modules()` never discovers them. The committed substrate and live ontology were neither read nor written.
+`negotiate_modules.py` parses both authors' modules with the exact parser the single-author linker uses, then classifies every cross-owner interaction (shared `term_key`s and explicit `imports`/`refines` only). Both module files live only under `experiments/negotiation_obo_scale_go/`; neither is in `[internal path removed]` nor named `ONTOLOGY.yaml`, so the live `build_ontology.discover_modules()` never discovers them. The committed substrate and live ontology were neither read nor written.
 
 ---
 
@@ -97,9 +97,9 @@ Each owned GO term's `def_hash` (sha256 of the trimmed definition, truncated to 
 
 ```
 uv run python code/negotiate_modules.py \
-    --author-a experiments/negotiation_obo_scale_go \
-    --author-b experiments/negotiation_obo_scale_go \
-    --sssom experiments/negotiation_obo_scale_go
+    --author-a experiments/negotiation_obo_scale_go/go \
+    --author-b experiments/negotiation_obo_scale_go/annotator \
+    --sssom experiments/negotiation_obo_scale_go/go_annotator.sssom.tsv
 ```
 
 The run was repeated with `--gate` appended for the federated CI verdict. **Determinism:** no random component, no sampling, no seed; `def_hash` is a pure function of definition text and the classifier is a pure function of the two parsed module sets.
@@ -147,7 +147,7 @@ Federation NOT clean: ...
 
 ## 5. The SSSOM mapping proposal
 
-`experiments/negotiation_obo_scale_go` — eight `CROSS_IMPORT` rows, each `skos:exactMatch` / `semapv:LexicalMatching` at confidence .95 (a clean dependency edge onto an owned GO term). The two `DANGLING_IMPORT` interactions carry **no** mapping row, exactly as designed: a dangling import is a missing-owner gap, not a term-to-term correspondence. The SSSOM is therefore a faithful record that the federation has eight clean reuse edges and two unresolved owner gaps.
+`experiments/negotiation_obo_scale_go/go_annotator.sssom.tsv` — eight `CROSS_IMPORT` rows, each `skos:exactMatch` / `semapv:LexicalMatching` at confidence .95 (a clean dependency edge onto an owned GO term). The two `DANGLING_IMPORT` interactions carry **no** mapping row, exactly as designed: a dangling import is a missing-owner gap, not a term-to-term correspondence. The SSSOM is therefore a faithful record that the federation has eight clean reuse edges and two unresolved owner gaps.
 
 ---
 
@@ -163,7 +163,7 @@ Federation NOT clean: ...
 
 ## 7. Threats to validity and limitations
 
-**Transcribed, not authored by the GO Consortium.** The GO module's definitions are faithful transcriptions the SBT author made from the published ontology (QuickGO) — not modules the Consortium authored in this schema. The independence is in GO's provenance (a different community, a 25-year-old standard, decades of governance), not yet in a living co-author's authoring act. This is the same load-bearing limitation as Cases 2–3 (the paper's L1).
+**Transcribed, not authored by the GO Consortium.** The GO module's definitions are faithful transcriptions the SBT author made from the published ontology (QuickGO) — not modules the Consortium authored in this schema. The independence is in GO's provenance (a different community, a 25-year-old standard, decades of governance), not yet in a living co-author's authoring act. This is the same central limitation as Cases 2–3 (the paper's L1).
 
 **A twelve-term slice, not the full GO.** GO has ~40,000 terms; this slice transcribes twelve. The experiment demonstrates the class set and the OBO-obsoletion grounding at realistic per-pair scale, not a full-ontology run. The runtime is linear in term count (the classification is a set intersection over keys), so the slice is representative of the mechanism, not a stress benchmark of the full ontology.
 
@@ -181,14 +181,14 @@ Anyone with the repository and Python 3.12 can reproduce this record exactly: (i
 
 **Internal artifacts (canonical SSOT, present now):**
 
-- `experiments/negotiation_obo_scale_go` — GO author module (new)
-- `experiments/negotiation_obo_scale_go` — annotation-resource module (new)
-- `experiments/negotiation_obo_scale_go` — tool-emitted SSSOM (8 CROSS_IMPORT rows)
+- `experiments/negotiation_obo_scale_go/go/go_molecular_function.yaml` — GO author module (new)
+- `experiments/negotiation_obo_scale_go/annotator/annotation_resource.yaml` — annotation-resource module (new)
+- `experiments/negotiation_obo_scale_go/go_annotator.sssom.tsv` — tool-emitted SSSOM (8 CROSS_IMPORT rows)
 - this experiment record
 
 The committed substrate and live ontology modules were not modified by the run. The two source vocabularies are registered as VERIFIED substrate sources (`ashburner-2000-gene-ontology`, and the cultural-heritage `doerr-2003-cidoc-crm` for the companion Case 5).
 
-**Publication plan.** Published to the public mirror when the carrying paper (`federated_negotiation`) is published, under an `experiments/negotiation-obo-scale-go/` directory, alongside Cases 1–3 and Case 5, per `experiments/negotiation_obo_scale_go` and PAQS items 37a–37f.
+**Publication plan.** Published to the public mirror when the carrying paper (`federated_negotiation`) is published, under an `experiments/negotiation-obo-scale-go/` directory, alongside Cases 1–3 and Case 5, per `[internal path removed]` and PAQS items 37a–37f.
 
 ---
 

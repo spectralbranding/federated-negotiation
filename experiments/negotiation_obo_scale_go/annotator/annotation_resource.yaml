@@ -30,7 +30,7 @@
 # GO module does NOT own (it owns go-dna-templated-transcription = GO:0006351,
 # the successor) -> genuine DANGLING_IMPORT.
 #
-# Deliberately NOT named ONTOLOGY.yaml and NOT a discovered ontology module, Loaded
+# Deliberately NOT named ONTOLOGY.yaml and NOT under [internal path removed] Loaded
 # explicitly by negotiate_modules.py via --author-b.
 
 paper_key: go_annotator_real
