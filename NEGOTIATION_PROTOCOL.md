@@ -2,8 +2,8 @@
 
 *Status: prototype, 2026-06-13. Companion to `SPINE_FIRST_DRAFTING_PROTOCOL.md`
 (§"The per-paper metadata bundle") and the single-author linker
-`build_ontology.py`. Tooling: `negotiate_modules.py`.
-Fixture: `experiments/`.*
+`code/build_ontology.py`. Tooling: `code/negotiate_modules.py`.
+Fixture: `[internal path removed]`.*
 
 ## Why this exists
 
@@ -60,9 +60,9 @@ operate *across owners* rather than across one author's timeline.
 ## Running it
 
 ```
-uv run python negotiate_modules.py \
-    --author-a experiments/authorA \
-    --author-b experiments/authorB
+uv run python code/negotiate_modules.py \
+    --author-a [internal path removed] \
+    --author-b [internal path removed]
 ```
 
 Each `--author-*` is a directory of that author's module YAML files (any
@@ -87,7 +87,7 @@ point; it never aborts the way the single-author linker does.
 
 ## The reconciliation procedure (worked, on the fixture)
 
-The fixture (`experiments/`) is two authors — a
+The fixture (`[internal path removed]`) is two authors — a
 "spectral" author A and a "semiotic" author B — engineered to hit all four
 interesting classes. The negotiation between them resolves as follows:
 
