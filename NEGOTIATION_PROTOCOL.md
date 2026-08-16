@@ -57,6 +57,50 @@ author's lock / fork / rebase / merge vocabulary
 (`SPINE_FIRST_DRAFTING_PROTOCOL.md` §"Operations") is preserved and lifted to
 operate *across owners* rather than across one author's timeline.
 
+### Two identity criteria, and which one is real
+
+The table above decides term identity by `def_hash`: two terms are the same term
+when their definition strings match after trimming. That is a *syntactic*
+criterion standing in for the one the operations themselves encode. The older and
+better-founded criterion — Klein's Erlangen program, and the routine
+category-theoretic practice of knowing an object by its morphisms — is that an
+object's identity is given by the structure of the transformations admissible on
+it. On that reading a term is identified by what imports it, what refines it,
+what it narrows to and what it may be merged with, not by how its definition
+happens to be worded.
+
+The two criteria come apart in both directions, and both errors are reachable
+from the table:
+
+- **False `AGREEMENT`.** Two authors can write byte-identical definitions for
+  terms sitting in incompatible refinement structures — same hash, different
+  object. Identical wording for `cohort` where one author narrows it to a
+  partition of observers and the other to a partition of purchase behaviour is
+  one object under the string criterion and two under the transformation
+  criterion. The linker asserts `skos:exactMatch` and proposes MERGE, and nothing
+  in the pipeline objects.
+- **False `CONFLICT`.** Two authors can word one object differently — different
+  hash, same object — and the tool routes a MERGE to NAMESPACE + FORK. This
+  direction is already conceded in the design: `CONFLICT` emits `closeMatch` at
+  0.5 confidence flagged for manual curation, which is an admission that the hash
+  was never the identity criterion, only a trigger for asking.
+
+`def_hash` stays, because it is mechanical, cheap, order-independent, and it never
+silently decides a semantic question on the authors' behalf. The transformation
+criterion is the right one and is not computable without exactly the human
+curation this protocol already routes `CONFLICT` into. What changes is how the
+result is read: **`def_hash` is a screen, not an identity criterion.**
+`AGREEMENT` means "no disagreement visible at the surface", not "the same term",
+and its `exactMatch` deserves the same curatable status the `CONFLICT` proposal
+already carries.
+
+**Declared open item (not implemented).** The false-`AGREEMENT` direction is the
+one a machine could still catch: before asserting `exactMatch` on two same-hash
+terms, compare their relation neighbourhoods — owners' `narrows_to` targets,
+inbound `refines`, import sets — and demote to a curated proposal when those
+disagree. That check would move a chunk of identity back onto the admissible
+transformations, where it belongs, without asking a tool to read a definition.
+
 ## Running it
 
 ```
