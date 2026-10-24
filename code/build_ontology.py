@@ -169,9 +169,9 @@ def link(mods: list[Module]) -> tuple[dict, list[str], list[str]]:
     warnings: list[str] = []
 
     # ---- pass 1: collect owners (unique-owner check) ----
-    owners: dict[str, str] = {}  # term_key -> paper_key
+    owners: dict[str, str | None] = {}  # term_key -> paper_key
     term_rows: dict[str, dict] = {}
-    relations: list[tuple[str, str, str, str]] = []
+    relations: list[tuple[str, str, str, str | None]] = []
     paper_terms: list[tuple] = []
 
     for m in mods:
@@ -424,9 +424,7 @@ def main() -> None:
         f"paper_terms={con.execute('select count(*) from paper_terms').fetchone()[0]}"
     )
     con.close()
-    print(
-        "Regenerate the .sql mirror: uv run python sync_substrate.py --sql-only"
-    )
+    print("Regenerate the .sql mirror: uv run python sync_substrate.py --sql-only")
 
 
 if __name__ == "__main__":
