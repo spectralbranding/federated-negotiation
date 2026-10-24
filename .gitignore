@@ -15,3 +15,14 @@ venv/
 
 # Rendered PDFs are archived on Zenodo, not committed here
 *.pdf
+
+# Fleet internal (public repo — nothing tracked)
+.claude/
+.claude-decisions/
+skills/
+.clinerules
+.cursorrules
+.cursorignore
+.rooignore
+.mcp.json
+.flake8
